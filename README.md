@@ -267,3 +267,5 @@ Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue.
 ---
 
 **Développé avec ❤️ et 🌱 pour un tourisme plus durable**
+![a8ba41bd-4bd5-48ed-868e-b6a6f6d1c138](https://github.com/user-attachments/assets/4007b161-4ef7-43b5-8be3-c05f3a599682)
+
