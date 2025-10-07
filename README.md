@@ -267,5 +267,16 @@ Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue.
 ---
 
 **Développé avec ❤️ et 🌱 pour un tourisme plus durable**
-![a8ba41bd-4bd5-48ed-868e-b6a6f6d1c138](https://github.com/user-attachments/assets/4007b161-4ef7-43b5-8be3-c05f3a599682)
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/7a4ca259-a853-4f9a-abce-ec2aac38f7fb" />
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/e6bf92cd-8c45-487c-b7f6-631560c721c0" />
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/42b216aa-df55-4c3a-a310-05a1561721bc" />
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/34d4dc8d-50bc-438a-940d-754caa68ca8a" />
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/dceb07fc-284d-4c1f-ac31-8a059eeaaef5" />
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/2c15ddb5-de88-424f-804a-ea6a1ebb37e8" />
+<img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/50f0c12f-4e48-489c-9d34-bb534515396c" />
+
+
+
+
+
 
