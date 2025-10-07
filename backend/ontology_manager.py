@@ -4,6 +4,7 @@ Gestionnaire d'ontologie RDF avec rdflib
 from rdflib import Graph, Namespace, RDF, RDFS, OWL, Literal, URIRef
 from rdflib.namespace import XSD
 import os
+import re
 
 class OntologyManager:
     """Gère le chargement et les requêtes sur l'ontologie"""
@@ -30,21 +31,40 @@ class OntologyManager:
     
     def execute_sparql(self, query):
         """Exécute une requête SPARQL"""
-        try:
-            results = self.graph.query(query)
-            return self._format_results(results)
-        except Exception as e:
-            print(f"Erreur SPARQL: {e}")
-            return []
+        # Ajouter automatiquement les PREFIX de base si absents
+        standard_prefixes = [
+            ("eco", "http://example.org/ecotourisme#"),
+            ("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+            ("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
+            ("xsd", "http://www.w3.org/2001/XMLSchema#"),
+            ("owl", "http://www.w3.org/2002/07/owl#"),
+        ]
+        q = query or ""
+        # Injecter chaque PREFIX manquant individuellement (insensible à la casse)
+        prefix_block = []
+        lower_q = q.lower()
+        for pfx, iri in standard_prefixes:
+            if f"prefix {pfx}:" not in lower_q:
+                prefix_block.append(f"PREFIX {pfx}: <{iri}>\n")
+        if prefix_block:
+            q = "".join(prefix_block) + "\n" + q
+        # Laisser les erreurs remonter pour que l'API renvoie un message explicite
+        results = self.graph.query(q)
+        return self._format_results(results)
     
     def _format_results(self, results):
         """Formate les résultats SPARQL en liste de dictionnaires"""
         formatted = []
         for row in results:
             result_dict = {}
-            for var in results.vars:
-                value = row[var]
-                if value:
+            # Utiliser asdict() pour s'assurer de récupérer toutes les liaisons
+            try:
+                bindings = getattr(row, 'asdict')()  # dict {Variable: term}
+            except Exception:
+                # Fallback sur results.vars si asdict n'est pas dispo
+                bindings = {var: row[var] for var in getattr(results, 'vars', [])}
+            for var, value in bindings.items():
+                if value is not None:
                     result_dict[str(var)] = self._format_value(value)
             formatted.append(result_dict)
         return formatted

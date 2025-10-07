@@ -1,382 +1,383 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://www.w3.org/2002/07/owl"
+<rdf:RDF xmlns="http://example.org/ecotourisme#"
+     xml:base="http://example.org/ecotourisme"
+     xmlns:eco="http://example.org/ecotourisme#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <Ontology rdf:about="http://example.org/ecotourismef"/>
+    <owl:Ontology rdf:about="http://example.org/ecotourismef"/>
     
     <!-- Object Properties -->
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#aCertification">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#aCertification">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Hébergement"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#aEmpreinte">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#aEmpreinte">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Transport"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#choisit">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#choisit">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#Destination"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#implique">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#implique">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#organise">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#organise">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#ÉvénementCulturel"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#propose">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#propose">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#Hébergement"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
-    <ObjectProperty rdf:about="http://example.org/ecotourisme#utilise">
+    <owl:ObjectProperty rdf:about="http://example.org/ecotourisme#utilise">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#GastronomieLocale"/>
         <rdfs:range rdf:resource="http://example.org/ecotourisme#RessourceNaturelle"/>
-    </ObjectProperty>
+    </owl:ObjectProperty>
     
     <!-- Data Properties -->
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aAccessibilité">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aAccessibilité">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aAuthenticitéLocale">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aAuthenticitéLocale">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aBiodiversité">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aBiodiversité">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aBudget">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aBudget">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aCO2">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aCO2">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aConsommationÉnergie">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aConsommationÉnergie">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Hébergement"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aCritèreRespecté">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aCritèreRespecté">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aFragilité">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aFragilité">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#RessourceNaturelle"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aImpactEnvironnemental">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aImpactEnvironnemental">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aInitiativeDurable">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aInitiativeDurable">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aLocalisation">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aLocalisation">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aNiveauCertification">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aNiveauCertification">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aProduitLocal">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aProduitLocal">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#GastronomieLocale"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aProfilÉcologique">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aProfilÉcologique">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aPréférence">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aPréférence">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aRéductionPossible">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aRéductionPossible">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
-    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aSaison">
+    <owl:DatatypeProperty rdf:about="http://example.org/ecotourisme#aSaison">
         <rdfs:domain rdf:resource="http://example.org/ecotourisme#ÉvénementCulturel"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </DatatypeProperty>
+    </owl:DatatypeProperty>
     
     <!-- Classes -->
-    <Class rdf:about="http://example.org/ecotourisme#ActivitéTouristique"/>
-    <Class rdf:about="http://example.org/ecotourisme#Avion">
+    <owl:Class rdf:about="http://example.org/ecotourisme#ActivitéTouristique"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Avion">
         <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#CertificationÉcologique"/>
-    <Class rdf:about="http://example.org/ecotourisme#CommunautéLocale"/>
-    <Class rdf:about="http://example.org/ecotourisme#Covoiturage">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#CertificationÉcologique"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#CommunautéLocale"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Covoiturage">
         <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#Destination"/>
-    <Class rdf:about="http://example.org/ecotourisme#EmpreinteCarbone"/>
-    <Class rdf:about="http://example.org/ecotourisme#GastronomieLocale"/>
-    <Class rdf:about="http://example.org/ecotourisme#Hébergement">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Destination"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#EmpreinteCarbone"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#GastronomieLocale"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Hébergement">
         <rdfs:subClassOf>
-            <Restriction>
-                <onProperty rdf:resource="http://example.org/ecotourisme#aCertification"/>
-                <someValuesFrom rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
-            </Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/ecotourisme#aCertification"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#RessourceNaturelle"/>
-    <Class rdf:about="http://example.org/ecotourisme#Train">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#RessourceNaturelle"/>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Train">
         <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#Transport">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Transport">
         <rdfs:subClassOf>
-            <Restriction>
-                <onProperty rdf:resource="http://example.org/ecotourisme#aEmpreinte"/>
-                <someValuesFrom rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
-            </Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/ecotourisme#aEmpreinte"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#TransportPublic">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#TransportPublic">
         <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#Voyageur">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Voyageur">
         <rdfs:subClassOf>
-            <Restriction>
-                <onProperty rdf:resource="http://example.org/ecotourisme#choisit"/>
-                <someValuesFrom rdf:resource="http://example.org/ecotourisme#Destination"/>
-            </Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://example.org/ecotourisme#choisit"/>
+                <owl:someValuesFrom rdf:resource="http://example.org/ecotourisme#Destination"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#Vélo">
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#Vélo">
         <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
-    </Class>
-    <Class rdf:about="http://example.org/ecotourisme#ÉvénementCulturel"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://example.org/ecotourisme#ÉvénementCulturel"/>
 
     <!-- Individuals -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#Ali">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#Ali">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <aBudget rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1500.0</aBudget>
         <aPréférence rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Culture et nature</aPréférence>
         <aProfilÉcologique rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Éco-responsable</aProfilÉcologique>
         <choisit rdf:resource="http://example.org/ecotourisme#TunisCarthage"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#TunisCarthage">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#TunisCarthage">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Destination"/>
         <aLocalisation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tunisie</aLocalisation>
         <aBiodiversité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Riche flore et faune méditerranéennes</aBiodiversité>
         <propose rdf:resource="http://example.org/ecotourisme#HotelEcoGreen"/>
         <organise rdf:resource="http://example.org/ecotourisme#FestivalMedina"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#HotelEcoGreen">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#HotelEcoGreen">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Hébergement"/>
         <aConsommationÉnergie rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">120.5</aConsommationÉnergie>
         <aCertification rdf:resource="http://example.org/ecotourisme#LabelGreen"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#LabelGreen">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#LabelGreen">
         <rdf:type rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
         <aNiveauCertification rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gold</aNiveauCertification>
         <aCritèreRespecté rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gestion eau, énergie renouvelable, recyclage</aCritèreRespecté>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#TrainExpress">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#TrainExpress">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Train"/>
         <aEmpreinte rdf:resource="http://example.org/ecotourisme#EmpreinteTrain"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteTrain">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteTrain">
         <rdf:type rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
         <aCO2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">45.0</aCO2>
         <aRéductionPossible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comparé à l'avion, 70% de moins</aRéductionPossible>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#RandonnéeAtlas">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#RandonnéeAtlas">
         <rdf:type rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
         <aAuthenticitéLocale rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Randonnée avec guides locaux berbères</aAuthenticitéLocale>
         <aImpactEnvironnemental rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Faible impact, respect de la faune</aImpactEnvironnemental>
         <implique rdf:resource="http://example.org/ecotourisme#CommunauteBerbere"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#CommunauteBerbere">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#CommunauteBerbere">
         <rdf:type rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
         <aInitiativeDurable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Artisanat équitable et accueil touristique</aInitiativeDurable>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#FestivalMedina">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#FestivalMedina">
         <rdf:type rdf:resource="http://example.org/ecotourisme#ÉvénementCulturel"/>
         <aSaison rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Été</aSaison>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#CuisineTunisienne">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#CuisineTunisienne">
         <rdf:type rdf:resource="http://example.org/ecotourisme#GastronomieLocale"/>
         <aProduitLocal rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</aProduitLocal>
         <utilise rdf:resource="http://example.org/ecotourisme#OliveLocale"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#OliveLocale">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#OliveLocale">
         <rdf:type rdf:resource="http://example.org/ecotourisme#RessourceNaturelle"/>
         <aFragilité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Risque de sécheresse</aFragilité>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- NOUVEAUX INDIVIDUS POUR PLUS DE DYNAMISME -->
     
     <!-- Voyageurs supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#Sarah">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#Sarah">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <aBudget rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2500.0</aBudget>
         <aPréférence rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Aventure et plongée</aPréférence>
         <aProfilÉcologique rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Éco-responsable</aProfilÉcologique>
         <choisit rdf:resource="http://example.org/ecotourisme#Djerba"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#Karim">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#Karim">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Voyageur"/>
         <aBudget rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1800.0</aBudget>
         <aPréférence rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Culture et gastronomie</aPréférence>
         <aProfilÉcologique rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Modéré</aProfilÉcologique>
         <choisit rdf:resource="http://example.org/ecotourisme#Marrakech"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Destinations supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#Marrakech">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#Marrakech">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Destination"/>
         <aLocalisation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maroc</aLocalisation>
         <aBiodiversité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oasis et jardins traditionnels</aBiodiversité>
         <aAccessibilité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Excellente</aAccessibilité>
         <propose rdf:resource="http://example.org/ecotourisme#RiadEcologique"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#Djerba">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#Djerba">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Destination"/>
         <aLocalisation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tunisie</aLocalisation>
         <aBiodiversité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Écosystème marin protégé</aBiodiversité>
         <aAccessibilité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bonne</aAccessibilité>
         <propose rdf:resource="http://example.org/ecotourisme#EcoLodgeDjerba"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#Essaouira">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#Essaouira">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Destination"/>
         <aLocalisation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maroc</aLocalisation>
         <aBiodiversité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Réserve ornithologique côte atlantique</aBiodiversité>
         <aAccessibilité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bonne</aAccessibilité>
         <propose rdf:resource="http://example.org/ecotourisme#MaisonVentEssaouira"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Hébergements supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#RiadEcologique">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#RiadEcologique">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Hébergement"/>
         <aConsommationÉnergie rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">95.0</aConsommationÉnergie>
         <aCertification rdf:resource="http://example.org/ecotourisme#LabelGreen"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#EcoLodgeDjerba">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#EcoLodgeDjerba">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Hébergement"/>
         <aConsommationÉnergie rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">110.0</aConsommationÉnergie>
         <aCertification rdf:resource="http://example.org/ecotourisme#LabelSilver"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#MaisonVentEssaouira">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#MaisonVentEssaouira">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Hébergement"/>
         <aConsommationÉnergie rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">75.0</aConsommationÉnergie>
         <aCertification rdf:resource="http://example.org/ecotourisme#LabelGold"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Certifications supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#LabelSilver">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#LabelSilver">
         <rdf:type rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
         <aNiveauCertification rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Silver</aNiveauCertification>
         <aCritèreRespecté rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gestion eau, recyclage partiel</aCritèreRespecté>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#LabelGold">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#LabelGold">
         <rdf:type rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
         <aNiveauCertification rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gold</aNiveauCertification>
         <aCritèreRespecté rdf:datatype="http://www.w3.org/2001/XMLSchema#string">100% énergie renouvelable, zéro déchet</aCritèreRespecté>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Transports supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#BusElectrique">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#BusElectrique">
         <rdf:type rdf:resource="http://example.org/ecotourisme#TransportPublic"/>
         <aEmpreinte rdf:resource="http://example.org/ecotourisme#EmpreinteBus"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#VeloPartage">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#VeloPartage">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Vélo"/>
         <aEmpreinte rdf:resource="http://example.org/ecotourisme#EmpreinteVelo"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#CovoiturageLocal">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#CovoiturageLocal">
         <rdf:type rdf:resource="http://example.org/ecotourisme#Covoiturage"/>
         <aEmpreinte rdf:resource="http://example.org/ecotourisme#EmpreinteCovoiturage"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Empreintes carbone -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteBus">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteBus">
         <rdf:type rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
         <aCO2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">25.0</aCO2>
         <aRéductionPossible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Électrique, 80% moins que diesel</aRéductionPossible>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteVelo">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteVelo">
         <rdf:type rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
         <aCO2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</aCO2>
         <aRéductionPossible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zéro émission</aRéductionPossible>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteCovoiturage">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteCovoiturage">
         <rdf:type rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
         <aCO2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">35.0</aCO2>
         <aRéductionPossible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Divisé par 4 passagers</aRéductionPossible>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Activités supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#PlongeeRecif">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#PlongeeRecif">
         <rdf:type rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
         <aAuthenticitéLocale rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Découverte récifs coralliens avec biologistes</aAuthenticitéLocale>
         <aImpactEnvironnemental rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Faible impact, sensibilisation marine</aImpactEnvironnemental>
         <implique rdf:resource="http://example.org/ecotourisme#CommunautePecheurs"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#KayakMer">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#KayakMer">
         <rdf:type rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
         <aAuthenticitéLocale rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Exploration côtière avec guides locaux</aAuthenticitéLocale>
         <aImpactEnvironnemental rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Très faible impact, zéro émission</aImpactEnvironnemental>
         <implique rdf:resource="http://example.org/ecotourisme#CommunautePecheurs"/>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
     <!-- Communautés supplémentaires -->
-    <NamedIndividual rdf:about="http://example.org/ecotourisme#CommunautePecheurs">
+    <owl:NamedIndividual rdf:about="http://example.org/ecotourisme#CommunautePecheurs">
         <rdf:type rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
         <aInitiativeDurable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pêche durable et protection marine</aInitiativeDurable>
-    </NamedIndividual>
+    </owl:NamedIndividual>
 
 </rdf:RDF>

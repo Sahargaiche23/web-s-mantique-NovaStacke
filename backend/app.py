@@ -73,10 +73,12 @@ def execute_sparql():
         return jsonify({
             'success': True,
             'results': results,
-            'count': len(results)
+            'count': len(results),
+            'query_executed': query,
+            'triple_count': len(ontology.graph)
         })
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e), 'query_executed': query}), 500
 
 @app.route('/api/sparql/predefined/<query_name>', methods=['GET'])
 def execute_predefined_query(query_name):

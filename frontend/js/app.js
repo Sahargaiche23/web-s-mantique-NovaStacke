@@ -239,16 +239,25 @@ function displaySPARQLResults(results) {
         resultsDiv.innerHTML = '<p class="text-gray-500">Aucun résultat</p>';
         return;
     }
-    const keys = Object.keys(results[0]);
-    let html = `<div class="mb-2 text-xs text-gray-500">${results.length} résultat(s)</div>`;
+    // Construire l'union des colonnes sur toutes les lignes
+    const keySet = new Set();
+    results.forEach(row => {
+        Object.keys(row || {}).forEach(k => keySet.add(k));
+    });
+    const keys = Array.from(keySet);
+    if (keys.length === 0) {
+        resultsDiv.innerHTML = '<p class="text-gray-500">Aucun résultat</p>';
+        return;
+    }
+    let html = `<div class=\"mb-2 text-xs text-gray-500\">${results.length} résultat(s)</div>`;
     html += '<table class="min-w-full divide-y divide-gray-200">';
     html += '<thead class="bg-gray-50"><tr>';
-    keys.forEach(key => { html += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">${key}</th>`; });
+    keys.forEach(key => { html += `<th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase\">${key}</th>`; });
     html += '</tr></thead>';
     html += '<tbody class="bg-white divide-y divide-gray-200">';
     results.forEach(row => {
         html += '<tr>';
-        keys.forEach(key => { html += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${row[key] || '-'}</td>`; });
+        keys.forEach(key => { html += `<td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-900\">${(row && row[key]) || '-'}</td>`; });
         html += '</tr>';
     });
     html += '</tbody></table>';

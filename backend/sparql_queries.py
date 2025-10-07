@@ -15,44 +15,45 @@ class SPARQLQueries:
     """
     
     # Requête 1: Hébergements écologiques avec faible empreinte carbone
-    QUERY_1_ECO_ACCOMMODATIONS = PREFIX + """
+    QUERY_1_ECO_ACCOMMODATIONS = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     SELECT ?hebergement ?energie ?certification ?niveau
     WHERE {
-        ?hebergement rdf:type eco:Hébergement .
-        ?hebergement eco:aConsommationÉnergie ?energie .
-        ?hebergement eco:aCertification ?certification .
-        ?certification eco:aNiveauCertification ?niveau .
+        ?hebergement rdf:type <http://example.org/ecotourisme#Hébergement> .
+        ?hebergement <http://example.org/ecotourisme#aConsommationÉnergie> ?energie .
+        ?hebergement <http://example.org/ecotourisme#aCertification> ?certification .
+        ?certification <http://example.org/ecotourisme#aNiveauCertification> ?niveau .
         FILTER(?energie < 150)
     }
     ORDER BY ?energie
     """
     
     # Requête 2: Destinations avec biodiversité riche et activités locales
-    QUERY_2_BIODIVERSITY_DESTINATIONS = PREFIX + """
-    SELECT ?destination ?localisation ?biodiversite (COUNT(?activite) AS ?nbActivites)
+    QUERY_2_BIODIVERSITY_DESTINATIONS = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    SELECT ?destination ?localisation ?biodiversite (COUNT(?hebergement) AS ?nbHebergements)
     WHERE {
-        ?destination rdf:type eco:Destination .
-        ?destination eco:aLocalisation ?localisation .
-        ?destination eco:aBiodiversité ?biodiversite .
-        OPTIONAL {
-            ?destination eco:propose ?hebergement .
-            ?activite eco:implique ?communaute .
-        }
+        ?destination rdf:type <http://example.org/ecotourisme#Destination> .
+        ?destination <http://example.org/ecotourisme#aLocalisation> ?localisation .
+        OPTIONAL { ?destination <http://example.org/ecotourisme#aBiodiversité> ?biodiversite }
+        OPTIONAL { ?destination <http://example.org/ecotourisme#propose> ?hebergement }
     }
     GROUP BY ?destination ?localisation ?biodiversite
-    HAVING (COUNT(?activite) > 0)
+    HAVING (COUNT(?hebergement) > 0)
     """
     
     # Requête 3: Comparaison empreintes carbone des transports
-    QUERY_3_TRANSPORT_COMPARISON = PREFIX + """
+    QUERY_3_TRANSPORT_COMPARISON = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT ?transport ?typeTransport ?co2 ?reduction
     WHERE {
         ?transport rdf:type ?typeTransport .
-        ?typeTransport rdfs:subClassOf* eco:Transport .
-        ?transport eco:aEmpreinte ?empreinte .
-        ?empreinte eco:aCO2 ?co2 .
-        OPTIONAL { ?empreinte eco:aRéductionPossible ?reduction }
-        FILTER(?typeTransport != eco:Transport)
+        ?typeTransport rdfs:subClassOf* <http://example.org/ecotourisme#Transport> .
+        ?transport <http://example.org/ecotourisme#aEmpreinte> ?empreinte .
+        ?empreinte <http://example.org/ecotourisme#aCO2> ?co2 .
+        OPTIONAL { ?empreinte <http://example.org/ecotourisme#aRéductionPossible> ?reduction }
+        FILTER(?typeTransport != <http://example.org/ecotourisme#Transport>)
     }
     ORDER BY ?co2
     """
