@@ -338,6 +338,20 @@ def advanced_filter():
             """
         )
     
+    # Nouveau: filtrage par type d'entité
+    if 'entity_type' in filters and str(filters['entity_type']).strip():
+        entity_type = str(filters['entity_type'])
+        if entity_type == 'Destination':
+            conditions.append("FILTER(?type = eco:Destination)")
+        elif entity_type == 'Hébergement':
+            conditions.append("FILTER(?type = eco:Hébergement)")
+        elif entity_type == 'ActivitéTouristique':
+            conditions.append("FILTER(?type = eco:ActivitéTouristique)")
+        elif entity_type == 'Transport':
+            conditions.append("FILTER(EXISTS { ?type rdfs:subClassOf* eco:Transport })")
+        elif entity_type == 'CertificationÉcologique':
+            conditions.append("FILTER(?type = eco:CertificationÉcologique)")
+    
     filter_clause = "\n".join(conditions)
     
     # Requête: on se limite aux classes d'intérêt pour de meilleurs résultats
@@ -345,14 +359,13 @@ def advanced_filter():
     PREFIX eco: <http://example.org/ecotourisme#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    SELECT DISTINCT ?entity ?type ?property ?value
+    SELECT DISTINCT ?entity ?type ?localisation ?energie ?niveau
     WHERE {{
         ?entity rdf:type ?type .
         FILTER(
             ?type IN (eco:Destination, eco:Hébergement, eco:ActivitéTouristique, eco:CertificationÉcologique) ||
             EXISTS {{ ?type rdfs:subClassOf* eco:Transport }}
         )
-        ?entity ?property ?value .
         OPTIONAL {{ ?entity eco:aConsommationÉnergie ?energie }}
         OPTIONAL {{ ?entity eco:aLocalisation ?localisation }}
         OPTIONAL {{ ?entity eco:aCertification ?cert . ?cert eco:aNiveauCertification ?niveau }}

@@ -157,6 +157,7 @@ async function performSearch() {
         if (energy) payload.max_energy = parseFloat(energy);
         if (location) payload.location = location;
         if (text) payload.text = text;
+        if (type) payload.entity_type = type;  // Ajouter le filtre de type
 
         const response = await fetch(`${API_BASE}/advanced/filter`, {
             method: 'POST',
@@ -166,9 +167,11 @@ async function performSearch() {
 
         const data = await response.json();
         let mapped = (data.results || []).map(r => ({
-            subject: r.entity || r.subject || '-',
-            predicate: r.property || r.predicate || r.type || '-',
-            object: r.value || r.relatedEntity || '-'
+            'Entité': r.entity || '-',
+            'Type': r.type || '-',
+            'Localisation': r.localisation || '-',
+            'Énergie': r.energie || '-',
+            'Certification': r.niveau || '-'
         }));
         
         // Fallback: si aucun résultat mais du texte fourni, utiliser la recherche textuelle simple
@@ -180,9 +183,11 @@ async function performSearch() {
             });
             const data2 = await res2.json();
             mapped = (data2.results || []).map(r => ({
-                subject: r.subject || r.entity || '-',
-                predicate: r.predicate || r.property || '-',
-                object: r.object || r.value || r.relatedEntity || '-'
+                'Entité': r.subject || r.entity || '-',
+                'Type': r.predicate || r.type || '-',
+                'Localisation': r.object || r.value || r.relatedEntity || '-',
+                'Énergie': '-',
+                'Certification': '-'
             }));
         }
         
