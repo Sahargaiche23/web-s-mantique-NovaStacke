@@ -71,24 +71,37 @@ function renderRecommendations(plan) {
     if (!container) return;
     let html = '';
     
-    if (plan.destinations && plan.destinations.length > 0) {
+    const recs = plan.recommendations || {};
+    
+    if (recs.destinations && recs.destinations.length > 0) {
         html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-green-700 border-b-2 border-green-200 pb-2">🏞️ Destinations</h4><div class="space-y-2">';
-        plan.destinations.forEach(d => { 
-            html += `<div class="p-3 bg-green-50 border-l-4 border-green-500 rounded">${d}</div>`; 
+        recs.destinations.forEach(d => { 
+            const txt = d.destination ? `${d.destination} (${d.localisation}) - Score: ${Math.round(d.final_score)}` : d;
+            html += `<div class="p-3 bg-green-50 border-l-4 border-green-500 rounded">${txt}</div>`; 
         });
         html += '</div></div>';
     }
-    if (plan.accommodations && plan.accommodations.length > 0) {
+    if (recs.accommodations && recs.accommodations.length > 0) {
         html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-blue-700 border-b-2 border-blue-200 pb-2">🏨 Hébergements</h4><div class="space-y-2">';
-        plan.accommodations.forEach(a => { 
-            html += `<div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">${a}</div>`; 
+        recs.accommodations.forEach(a => { 
+            const txt = a.hebergement ? `${a.hebergement} - ${a.energie} kWh - ${a.niveau} - Score: ${Math.round(a.final_score)}` : a;
+            html += `<div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">${txt}</div>`; 
         });
         html += '</div></div>';
     }
-    if (plan.activities && plan.activities.length > 0) {
+    if (recs.activities && recs.activities.length > 0) {
         html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-purple-700 border-b-2 border-purple-200 pb-2">🎯 Activités</h4><div class="space-y-2">';
-        plan.activities.forEach(a => { 
-            html += `<div class="p-3 bg-purple-50 border-l-4 border-purple-500 rounded">${a}</div>`; 
+        recs.activities.forEach(a => { 
+            const txt = a.activite ? `${a.activite} - ${a.impact} - Score: ${Math.round(a.final_score)}` : a;
+            html += `<div class="p-3 bg-purple-50 border-l-4 border-purple-500 rounded">${txt}</div>`; 
+        });
+        html += '</div></div>';
+    }
+    if (recs.transport && recs.transport.length > 0) {
+        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-yellow-700 border-b-2 border-yellow-200 pb-2">🚆 Transports</h4><div class="space-y-2">';
+        recs.transport.forEach(t => { 
+            const txt = t.transport ? `${t.transport} - ${t.co2} kg CO2 - Score: ${Math.round(t.final_score)}` : t;
+            html += `<div class="p-3 bg-yellow-50 border-l-4 border-yellow-500 rounded">${txt}</div>`; 
         });
         html += '</div></div>';
     }
@@ -152,12 +165,12 @@ async function performSearch() {
         });
 
         const data = await response.json();
-        countDiv.innerHTML = `<span class="font-semibold">${data.results?.length || 0}</span> résultat(s) trouvé(s)`;
         let mapped = (data.results || []).map(r => ({
             subject: r.entity || r.subject || '-',
             predicate: r.property || r.predicate || r.type || '-',
             object: r.value || r.relatedEntity || '-'
         }));
+        
         // Fallback: si aucun résultat mais du texte fourni, utiliser la recherche textuelle simple
         if ((!mapped || mapped.length === 0) && text) {
             const res2 = await fetch(`${API_BASE}/ontology/search`, {
@@ -172,21 +185,24 @@ async function performSearch() {
                 object: r.object || r.value || r.relatedEntity || '-'
             }));
         }
+        
+        // Mettre à jour le compteur APRÈS avoir récupéré tous les résultats
+        countDiv.innerHTML = `<span class="font-semibold">${mapped.length}</span> résultat(s) trouvé(s)`;
+        
         // Rendu
         if (!mapped || mapped.length === 0) {
-            resultsDiv.innerHTML = '<p class="text-gray-500">Aucun résultat</p>';
+            resultsDiv.innerHTML = '<p class="text-gray-500 text-center py-8">Aucun résultat trouvé</p>';
             return;
         }
         const keys = Object.keys(mapped[0]);
-        let html = `<div class="mb-2 text-xs text-gray-500">${mapped.length} résultat(s)</div>`;
-        html += '<table class="min-w-full divide-y divide-gray-200">';
+        let html = '<table class="min-w-full divide-y divide-gray-200">';
         html += '<thead class="bg-gray-50"><tr>';
-        keys.forEach(k => { html += `<th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase\">${k}</th>`; });
+        keys.forEach(k => { html += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">${k}</th>`; });
         html += '</tr></thead>';
         html += '<tbody class="bg-white divide-y divide-gray-200">';
         mapped.forEach(row => {
             html += '<tr>';
-            keys.forEach(k => { html += `<td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-900\">${row[k] || '-'}</td>`; });
+            keys.forEach(k => { html += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${row[k] || '-'}</td>`; });
             html += '</tr>';
         });
         html += '</tbody></table>';
