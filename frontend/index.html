@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTravel - Voyage Sémantique Écologique</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-green-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🌍 EcoTravel</h1>
+            <div class="space-x-4">
+                <a href="#" onclick="showPage('home')" class="hover:underline">Accueil</a>
+                <a href="#" onclick="showPage('search')" class="hover:underline">Recherche</a>
+                <a href="#" onclick="showPage('recommendations')" class="hover:underline">Recommandations</a>
+                <a href="#" onclick="showPage('sparql')" class="hover:underline">SPARQL</a>
+                <a href="#" onclick="showPage('visualizations')" class="hover:underline">Visualisations</a>
+                <a href="#" onclick="showPage('ontology')" class="hover:underline">Ontologie</a>
+                <a href="#" onclick="showPage('chat')" class="hover:underline">Chat</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <!-- Page Accueil -->
+        <div id="page-home" class="page-content">
+            <h2 class="text-4xl font-bold mb-6">Voyagez Écologiquement</h2>
+            <div class="grid grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="text-gray-600">Destinations</h3>
+                    <p class="text-3xl font-bold text-green-600" id="stat-destinations">-</p>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="text-gray-600">Hébergements</h3>
+                    <p class="text-3xl font-bold text-blue-600" id="stat-accommodations">-</p>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="text-gray-600">Activités</h3>
+                    <p class="text-3xl font-bold text-purple-600" id="stat-activities">-</p>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="text-gray-600">Score Éco</h3>
+                    <p class="text-3xl font-bold text-yellow-600" id="stat-eco-score">85</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Recherche -->
+        <div id="page-search" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Recherche Avancée</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Filtres</h3>
+                    <input type="text" id="filter-text" placeholder="Rechercher..." class="w-full p-2 border rounded mb-4">
+                    <input type="number" id="filter-energy" placeholder="Énergie max" class="w-full p-2 border rounded mb-4">
+                    <button onclick="performSearch()" class="w-full bg-green-600 text-white p-2 rounded">Rechercher</button>
+                </div>
+                <div class="col-span-2 bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Résultats</h3>
+                    <div id="search-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Recommandations -->
+        <div id="page-recommendations" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Recommandations IA</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Profil</h3>
+                    <input type="number" id="user-budget" value="1500" placeholder="Budget" class="w-full p-2 border rounded mb-4">
+                    <select id="user-eco-profile" class="w-full p-2 border rounded mb-4">
+                        <option>Éco-responsable</option>
+                        <option>Modéré</option>
+                    </select>
+                    <button onclick="generateRecommendations()" class="w-full bg-green-600 text-white p-2 rounded">Générer</button>
+                </div>
+                <div class="col-span-2 bg-white p-6 rounded shadow">
+                    <div id="recommendations-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page SPARQL -->
+        <div id="page-sparql" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Requêtes SPARQL</h2>
+            <div class="grid grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Requêtes</h3>
+                    <div id="sparql-queries-list"></div>
+                </div>
+                <div class="col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded shadow">
+                        <textarea id="sparql-editor" rows="8" class="w-full p-2 border rounded font-mono"></textarea>
+                        <button onclick="executeSPARQL()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded">Exécuter</button>
+                    </div>
+                    <div class="bg-white p-6 rounded shadow">
+                        <div id="sparql-results"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Visualisations -->
+        <div id="page-visualizations" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Visualisations</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-carbon"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-energy"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-eco-scores"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-certifications"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Ontologie -->
+        <div id="page-ontology" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Explorer l'Ontologie</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Classes</h3>
+                    <div id="ontology-classes"></div>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Propriétés</h3>
+                    <div id="ontology-properties"></div>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Individus</h3>
+                    <div id="ontology-individuals"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Chatbot IA -->
+        <div id="page-chat" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Assistant IA</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded shadow flex flex-col" style="height: 520px;">
+                    <div id="chat-window" class="flex-1 overflow-y-auto space-y-3 pr-2">
+                        <!-- Messages -->
+                    </div>
+                    <div class="mt-4 flex flex-col gap-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-600">
+                            <input id="chat-llm-toggle" type="checkbox" class="accent-green-600" />
+                            Activer IA avancée (GPT)
+                        </label>
+                        <div class="flex gap-2">
+                        <input id="chat-input" type="text" class="flex-1 p-2 border rounded" placeholder="Posez une question... (ex: meilleures destinations écologiques)">
+                        <button onclick="sendChatMessage()" class="bg-green-600 text-white px-4 py-2 rounded">Envoyer</button>
+                        <button onclick="clearChat()" class="bg-gray-200 px-4 py-2 rounded">Effacer</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Suggestions</h3>
+                    <div id="chat-suggestions" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

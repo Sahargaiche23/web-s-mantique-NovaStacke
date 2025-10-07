@@ -1,0 +1,21 @@
+flask==3.0.0
+flask-cors==4.0.0
+rdflib==7.0.0
+SPARQLWrapper==2.0.0
+scikit-learn==1.3.2
+numpy==1.26.2
+pandas==2.1.4
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.18.0
+transformers==4.36.0
+
+# 🔄 Correction : torch 2.1.2 incompatible avec Python 3.12 → remplacée par version stable
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+
+sentence-transformers==2.2.2
+networkx==3.2.1
+python-dotenv==1.0.0
+gunicorn==21.2.0
