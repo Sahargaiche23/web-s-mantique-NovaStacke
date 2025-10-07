@@ -26,7 +26,13 @@ async function generateRecommendations() {
     const profile = profileEl ? profileEl.value : 'Modéré';
     container.innerHTML = '<p class="text-gray-500">Génération en cours...</p>';
 
-    const payload = { budget, profile };
+    // Aligner avec le backend: attend { max_budget, eco_profile, preferences }
+    const payload = {
+        max_budget: budget,
+        eco_profile: profile,
+        // Optionnel: préférences textuelles (laisser vide pour l'instant)
+        preferences: ''
+    };
     try {
         const res = await fetch(`${API_BASE}/recommendations/travel-plan`, {
             method: 'POST',
@@ -47,43 +53,61 @@ async function generateRecommendation() { return generateRecommendations(); }
 function renderRecommendations(plan) {
     const container = document.getElementById('recommendations-container');
     if (!container) return;
+    const rec = plan.recommendations || plan;
     const sections = [];
-    if (plan.destinations && plan.destinations.length) {
+
+    // Destinations
+    if (rec.destinations && rec.destinations.length) {
         sections.push(`
             <div>
                 <h4 class="font-semibold mb-2">Destinations suggérées</h4>
                 <ul class="list-disc ml-5 space-y-1">
-                    ${plan.destinations.map(d => `<li>${d.destination || d}</li>`).join('')}
+                    ${rec.destinations.map(d => `<li>${d.destination || d}</li>`).join('')}
                 </ul>
             </div>`);
     }
-    if (plan.accommodations && plan.accommodations.length) {
+
+    // Hébergements
+    if (rec.accommodations && rec.accommodations.length) {
         sections.push(`
             <div>
                 <h4 class="font-semibold mb-2">Hébergements</h4>
                 <ul class="list-disc ml-5 space-y-1">
-                    ${plan.accommodations.map(h => `<li>${h.hebergement || h} — énergie: ${h.energie ?? '-'} kWh</li>`).join('')}
+                    ${rec.accommodations.map(h => `<li>${h.hebergement || h} — énergie: ${h.energie ?? '-'} kWh — score éco: ${h.eco_score ?? '-'}</li>`).join('')}
                 </ul>
             </div>`);
     }
-    if (plan.activities && plan.activities.length) {
+
+    // Activités
+    if (rec.activities && rec.activities.length) {
         sections.push(`
             <div>
                 <h4 class="font-semibold mb-2">Activités</h4>
                 <ul class="list-disc ml-5 space-y-1">
-                    ${plan.activities.map(a => `<li>${a.activite || a}</li>`).join('')}
+                    ${rec.activities.map(a => `<li>${a.activite || a} ${a.impact ? `— impact: ${a.impact}` : ''}</li>`).join('')}
                 </ul>
             </div>`);
     }
-    if (plan.transport && plan.transport.length) {
+
+    // Transport
+    if (rec.transport && rec.transport.length) {
         sections.push(`
             <div>
                 <h4 class="font-semibold mb-2">Transport</h4>
                 <ul class="list-disc ml-5 space-y-1">
-                    ${plan.transport.map(t => `<li>${t.transport || t} — CO2: ${t.co2 ?? '-'} kg</li>`).join('')}
+                    ${rec.transport.map(t => `<li>${t.transport || t} — CO2 estimé: ${t.estimated_carbon ?? '-'} kg — score éco: ${t.eco_score ?? '-'}</li>`).join('')}
                 </ul>
             </div>`);
     }
+
+    // Résumé global si disponible
+    const summaryBits = [];
+    if (typeof plan.total_eco_score !== 'undefined') summaryBits.push(`Score éco total: <strong>${plan.total_eco_score}</strong>`);
+    if (typeof plan.estimated_carbon_footprint !== 'undefined') summaryBits.push(`Empreinte carbone estimée: <strong>${plan.estimated_carbon_footprint}</strong> kg`);
+    if (summaryBits.length) {
+        sections.unshift(`<div class="text-sm text-gray-700">${summaryBits.join(' · ')}</div>`);
+    }
+
     if (!sections.length) {
         container.innerHTML = '<p class="text-gray-500">Aucune recommandation trouvée pour ce profil.</p>';
         return;
@@ -136,9 +160,9 @@ async function performSearch() {
 
         const data = await response.json();
         let mapped = (data.results || []).map(r => ({
-            subject: r.entity || r.subject,
-            predicate: r.property || r.predicate || r.type,
-            object: r.value || r.relatedEntity || ''
+            subject: r.entity || r.subject || '-',
+            predicate: r.property || r.predicate || r.type || '-',
+            object: r.value || r.relatedEntity || '-'
         }));
         // Fallback: si aucun résultat mais du texte fourni, utiliser la recherche textuelle simple
         if ((!mapped || mapped.length === 0) && text) {
@@ -148,8 +172,31 @@ async function performSearch() {
                 body: JSON.stringify({ text })
             });
             const data2 = await res2.json();
-            mapped = data2.results || [];
+            mapped = (data2.results || []).map(r => ({
+                subject: r.subject || r.entity || '-',
+                predicate: r.predicate || r.property || '-',
+                object: r.object || r.value || r.relatedEntity || '-'
+            }));
         }
+        // Rendu
+        if (!mapped || mapped.length === 0) {
+            resultsDiv.innerHTML = '<p class="text-gray-500">Aucun résultat</p>';
+            return;
+        }
+        const keys = Object.keys(mapped[0]);
+        let html = `<div class="mb-2 text-xs text-gray-500">${mapped.length} résultat(s)</div>`;
+        html += '<table class="min-w-full divide-y divide-gray-200">';
+        html += '<thead class="bg-gray-50"><tr>';
+        keys.forEach(k => { html += `<th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase\">${k}</th>`; });
+        html += '</tr></thead>';
+        html += '<tbody class="bg-white divide-y divide-gray-200">';
+        mapped.forEach(row => {
+            html += '<tr>';
+            keys.forEach(k => { html += `<td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-900\">${row[k] || '-'}</td>`; });
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        resultsDiv.innerHTML = html;
     } catch (error) {
         resultsDiv.innerHTML = `<p class="text-red-500">Erreur: ${error.message}</p>`;
     }
@@ -172,6 +219,15 @@ async function loadSPARQLQueries() {
         });
         html += '</div>';
         listDiv.innerHTML = html;
+        // Auto-charger la première requête pour pré-remplir l'éditeur
+        if (data.queries && data.queries.length > 0) {
+            loadPredefinedQuery(data.queries[0]);
+        } else {
+            const editor = document.getElementById('sparql-editor');
+            if (editor) editor.value = '# Entrez une requête SPARQL ici';
+            const resultsDiv = document.getElementById('sparql-results');
+            if (resultsDiv) resultsDiv.innerHTML = '<p class="text-gray-500">Aucune requête prédéfinie disponible</p>';
+        }
     } catch (error) {
         console.error('Erreur chargement requêtes:', error);
     }
@@ -229,6 +285,8 @@ async function executeSPARQL() {
     }
     
     try {
+        const resultsDiv = document.getElementById('sparql-results');
+        if (resultsDiv) resultsDiv.innerHTML = '<p class="text-gray-500">Exécution en cours...</p>';
         const response = await fetch(`${API_BASE}/sparql/execute`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -236,7 +294,11 @@ async function executeSPARQL() {
         });
         
         const data = await response.json();
-        displaySPARQLResults(data.results);
+        if (!response.ok) {
+            if (resultsDiv) resultsDiv.innerHTML = `<p class="text-red-500">Erreur API: ${data.error || 'Erreur inconnue'}</p>`;
+            return;
+        }
+        displaySPARQLResults(data.results || []);
     } catch (error) {
         document.getElementById('sparql-results').innerHTML = 
             `<p class="text-red-500">Erreur: ${error.message}</p>`;
