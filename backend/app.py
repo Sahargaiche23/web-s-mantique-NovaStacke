@@ -467,6 +467,103 @@ def chatbot_clear():
     chatbot.clear_history()
     return jsonify({'success': True, 'message': 'History cleared'})
 
+# ==================== DASHBOARD STATISTICS ====================
+
+@app.route('/api/dashboard/statistics', methods=['GET'])
+def get_dashboard_statistics():
+    """Récupère les statistiques détaillées de l'ontologie en temps réel"""
+    try:
+        # Statistiques des classes principales
+        class_queries = {
+            'Destinations': {
+                'count': "SELECT (COUNT(?s) AS ?count) WHERE { ?s rdf:type eco:Destination }",
+                'details': "SELECT ?destination ?localisation WHERE { ?destination rdf:type eco:Destination . OPTIONAL { ?destination eco:aLocalisation ?localisation } }"
+            },
+            'Hébergements': {
+                'count': "SELECT (COUNT(?s) AS ?count) WHERE { ?s rdf:type eco:Hébergement }",
+                'details': "SELECT ?hebergement ?energie WHERE { ?hebergement rdf:type eco:Hébergement . OPTIONAL { ?hebergement eco:aConsommationÉnergie ?energie } }"
+            },
+            'Activités': {
+                'count': "SELECT (COUNT(?s) AS ?count) WHERE { ?s rdf:type eco:ActivitéTouristique }",
+                'details': "SELECT ?activite ?impact WHERE { ?activite rdf:type eco:ActivitéTouristique . OPTIONAL { ?activite eco:aImpactEnvironnemental ?impact } }"
+            },
+            'Transports': {
+                'count': "SELECT (COUNT(?s) AS ?count) WHERE { ?s rdf:type ?type . ?type rdfs:subClassOf* eco:Transport . FILTER(?type != eco:Transport) }",
+                'details': "SELECT ?transport ?type ?co2 WHERE { ?transport rdf:type ?type . ?type rdfs:subClassOf* eco:Transport . OPTIONAL { ?transport eco:aEmpreinte ?empreinte . ?empreinte eco:aCO2 ?co2 } }"
+            },
+            'Certifications': {
+                'count': "SELECT (COUNT(?s) AS ?count) WHERE { ?s rdf:type eco:CertificationÉcologique }",
+                'details': "SELECT ?certification ?niveau WHERE { ?certification rdf:type eco:CertificationÉcologique . OPTIONAL { ?certification eco:aNiveauCertification ?niveau } }"
+            }
+        }
+
+        statistics = {}
+        total_entities = 0
+
+        for class_name, queries in class_queries.items():
+            # Compter les instances
+            count_result = ontology.execute_sparql(queries['count'])
+            count = int(count_result[0]['count']) if count_result else 0
+            statistics[class_name] = {'count': count, 'details': []}
+            total_entities += count
+
+            # Récupérer les détails (max 5 exemples)
+            if count > 0:
+                details_result = ontology.execute_sparql(queries['details'])
+                statistics[class_name]['details'] = details_result[:5]
+
+        # Statistiques globales
+        total_triples = len(ontology.graph)
+
+        # Statistiques énergétiques (pour le score écologique)
+        energy_query = """
+        PREFIX eco: <http://example.org/ecotourisme#>
+        SELECT (AVG(?energie) AS ?energieMoyenne) (MIN(?energie) AS ?energieMin) (MAX(?energie) AS ?energieMax)
+        WHERE {
+            ?hebergement rdf:type eco:Hébergement .
+            ?hebergement eco:aConsommationÉnergie ?energie .
+        }
+        """
+        energy_stats = ontology.execute_sparql(energy_query)
+        energy_avg = float(energy_stats[0]['energieMoyenne']) if energy_stats and energy_stats[0].get('energieMoyenne') else 0
+
+        # Calculer le score écologique basé sur l'énergie moyenne
+        eco_score = max(0, 100 - (energy_avg / 2)) if energy_avg > 0 else 85
+
+        # Empreinte carbone moyenne (basée sur les transports)
+        carbon_query = """
+        PREFIX eco: <http://example.org/ecotourisme#>
+        SELECT (AVG(?co2) AS ?co2Moyen)
+        WHERE {
+            ?transport rdf:type ?type .
+            ?type rdfs:subClassOf* eco:Transport .
+            ?transport eco:aEmpreinte ?empreinte .
+            ?empreinte eco:aCO2 ?co2 .
+        }
+        """
+        carbon_stats = ontology.execute_sparql(carbon_query)
+        carbon_avg = float(carbon_stats[0]['co2Moyen']) if carbon_stats and carbon_stats[0].get('co2Moyen') else 45
+
+        return jsonify({
+            'timestamp': 'N/A',
+            'total_entities': total_entities,
+            'total_triples': total_triples,
+            'eco_score': round(eco_score, 2),
+            'carbon_footprint': round(carbon_avg, 2),
+            'class_statistics': statistics,
+            'last_updated': 'N/A'
+        })
+
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'total_entities': 0,
+            'total_triples': 0,
+            'eco_score': 0,
+            'carbon_footprint': 0,
+            'class_statistics': {}
+        }), 500
+
 # ==================== ERROR HANDLERS ====================
 
 @app.errorhandler(404)

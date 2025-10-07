@@ -11,15 +11,55 @@ function showPage(pageName) {
     // Charger les données spécifiques à la page
     if (pageName === 'home') loadHomeData();
     if (pageName === 'sparql') loadSPARQLQueries();
-    if (pageName === 'visualizations') loadVisualizations();
     if (pageName === 'ontology') loadOntologyData();
     if (pageName === 'chat') initChat();
 }
 
 // ==================== RECOMMANDATIONS ====================
-document.getElementById('user-budget')?.addEventListener('input', (e) => {
-    document.getElementById('budget-display').textContent = e.target.value + '€';
+document.addEventListener('DOMContentLoaded', () => {
+    loadHomeData();
+
+    // Démarrer la mise à jour automatique du dashboard
+    startDashboardAutoUpdate();
+
+    // Arrêter la mise à jour quand on quitte la page d'accueil
+    window.addEventListener('beforeunload', stopDashboardAutoUpdate);
 });
+
+function showPage(pageId) {
+    // Cacher toutes les pages
+    document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.add('hidden');
+    });
+
+    // Afficher la page demandée
+    document.getElementById(`page-${pageId}`).classList.remove('hidden');
+
+    // Mettre à jour la navigation
+    document.querySelectorAll('nav a').forEach(link => {
+        link.classList.remove('font-bold', 'text-green-300');
+        link.classList.add('text-white');
+    });
+    event.target.classList.add('font-bold', 'text-green-300');
+
+    // Actions spécifiques par page
+    if (pageId === 'home') {
+        startDashboardAutoUpdate();
+    } else {
+        stopDashboardAutoUpdate();
+    }
+
+    // Recharger les données spécifiques à la page
+    if (pageId === 'sparql') {
+        loadSPARQLQueries();
+    } else if (pageId === 'visualizations') {
+        loadVisualizations();
+    } else if (pageId === 'ontology') {
+        loadOntologyData();
+    } else if (pageId === 'chat') {
+        initChat();
+    }
+}
 
 async function generateRecommendations() {
     const budgetEl = document.getElementById('user-budget');
@@ -523,10 +563,122 @@ async function loadIndividuals() {
     }
 }
 
-// Initialisation
-document.addEventListener('DOMContentLoaded', () => {
-    loadHomeData();
-});
+// ==================== DASHBOARD ====================
+let dashboardUpdateInterval;
+
+async function loadDashboard() {
+    try {
+        const response = await fetch(`${API_BASE}/dashboard/statistics`);
+        const data = await response.json();
+
+        if (data.error) {
+            console.error('Erreur chargement dashboard:', data.error);
+            return;
+        }
+
+        // Mettre à jour les statistiques principales
+        document.getElementById('stat-total-entities').textContent = data.total_entities || 0;
+        document.getElementById('stat-eco-score').textContent = data.eco_score || 0;
+        document.getElementById('stat-carbon-footprint').textContent = data.carbon_footprint || 0;
+        document.getElementById('stat-total-triples').textContent = data.total_triples || 0;
+
+        // Mettre à jour le timestamp
+        document.getElementById('last-updated').textContent = `Dernière mise à jour: ${new Date().toLocaleTimeString()}`;
+
+        // Mettre à jour les détails par classe
+        updateClassDetails('dest', data.class_statistics?.Destinations);
+        updateClassDetails('heb', data.class_statistics?.Hébergements);
+        updateClassDetails('act', data.class_statistics?.Activités);
+        updateClassDetails('trans', data.class_statistics?.Transports);
+        updateClassDetails('cert', data.class_statistics?.Certifications);
+
+        // Mettre à jour la vue d'ensemble
+        updateOverview(data);
+
+    } catch (error) {
+        console.error('Erreur chargement dashboard:', error);
+    }
+}
+
+function updateClassDetails(prefix, classData) {
+    if (!classData) return;
+
+    // Mettre à jour le compteur
+    document.getElementById(`${prefix}-count`).textContent = classData.count || 0;
+
+    // Mettre à jour les détails
+    const detailsContainer = document.getElementById(`${prefix}-details`);
+    detailsContainer.innerHTML = '';
+
+    if (classData.details && classData.details.length > 0) {
+        classData.details.forEach(item => {
+            let detailText = '';
+            let detailValue = '';
+
+            if (prefix === 'dest') {
+                detailText = item.destination || 'N/A';
+                detailValue = item.localisation || 'N/A';
+            } else if (prefix === 'heb') {
+                detailText = item.hebergement || 'N/A';
+                detailValue = item.energie ? `${item.energie} kWh` : 'N/A';
+            } else if (prefix === 'act') {
+                detailText = item.activite || 'N/A';
+                detailValue = item.impact || 'N/A';
+            } else if (prefix === 'trans') {
+                detailText = item.transport || 'N/A';
+                detailValue = item.co2 ? `${item.co2} kg CO2` : 'N/A';
+            } else if (prefix === 'cert') {
+                detailText = item.certification || 'N/A';
+                detailValue = item.niveau || 'N/A';
+            }
+
+            const detailElement = document.createElement('div');
+            detailElement.className = 'flex justify-between items-center py-1';
+            detailElement.innerHTML = `
+                <span class="text-sm text-gray-600 truncate flex-1">${detailText}</span>
+                <span class="text-xs text-gray-500 ml-2">${detailValue}</span>
+            `;
+            detailsContainer.appendChild(detailElement);
+        });
+    } else {
+        const noDataElement = document.createElement('div');
+        noDataElement.className = 'text-sm text-gray-500 text-center py-2';
+        noDataElement.textContent = 'Aucune donnée';
+        detailsContainer.appendChild(noDataElement);
+    }
+}
+
+function updateOverview(data) {
+    const totalEntities = data.total_entities || 0;
+    const totalTriples = data.total_triples || 0;
+    const classCount = Object.keys(data.class_statistics || {}).length;
+
+    // Taux de couverture (entités vs triples)
+    const coverageRate = totalTriples > 0 ? Math.round((totalEntities / totalTriples) * 100) : 0;
+    document.getElementById('coverage-rate').textContent = `${coverageRate}%`;
+
+    // Entités par classe moyenne
+    const avgPerClass = classCount > 0 ? Math.round(totalEntities / classCount) : 0;
+    document.getElementById('avg-per-class').textContent = avgPerClass;
+
+    // Dernière modification
+    const lastModified = data.last_updated || 'N/A';
+    document.getElementById('last-modified').textContent = lastModified;
+}
+
+function startDashboardAutoUpdate() {
+    // Charger immédiatement
+    loadDashboard();
+
+    // Puis mettre à jour toutes les 30 secondes
+    dashboardUpdateInterval = setInterval(loadDashboard, 30000);
+}
+
+function stopDashboardAutoUpdate() {
+    if (dashboardUpdateInterval) {
+        clearInterval(dashboardUpdateInterval);
+    }
+}
 
 // ==================== CHATBOT ====================
 function appendChatMessage(role, text) {
