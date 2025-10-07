@@ -17,21 +17,25 @@ function showPage(pageName) {
 }
 
 // ==================== RECOMMANDATIONS ====================
+document.getElementById('user-budget')?.addEventListener('input', (e) => {
+    document.getElementById('budget-display').textContent = e.target.value + '€';
+});
+
 async function generateRecommendations() {
     const budgetEl = document.getElementById('user-budget');
     const profileEl = document.getElementById('user-eco-profile');
+    const prefsEl = document.getElementById('user-preferences');
     const container = document.getElementById('recommendations-container');
     if (!container) return;
     const budget = budgetEl ? parseFloat(budgetEl.value || '0') : 0;
     const profile = profileEl ? profileEl.value : 'Modéré';
+    const prefs = prefsEl ? prefsEl.value : '';
     container.innerHTML = '<p class="text-gray-500">Génération en cours...</p>';
 
-    // Aligner avec le backend: attend { max_budget, eco_profile, preferences }
     const payload = {
         max_budget: budget,
         eco_profile: profile,
-        // Optionnel: préférences textuelles (laisser vide pour l'instant)
-        preferences: ''
+        preferences: prefs
     };
     try {
         const res = await fetch(`${API_BASE}/recommendations/travel-plan`, {
@@ -41,78 +45,56 @@ async function generateRecommendations() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erreur API');
+        
+        // Afficher score et empreinte
+        if (data.total_eco_score !== undefined) {
+            document.getElementById('estimated-eco-score').classList.remove('hidden');
+            document.getElementById('eco-score-value').textContent = Math.round(data.total_eco_score);
+        }
+        if (data.estimated_carbon_footprint !== undefined || data.total_eco_score !== undefined) {
+            const summary = document.getElementById('recommendations-summary');
+            summary.classList.remove('hidden');
+            document.getElementById('carbon-footprint').textContent = Math.round(data.estimated_carbon_footprint || 0);
+            document.getElementById('total-eco-score').textContent = Math.round(data.total_eco_score || 0);
+        }
+        
         renderRecommendations(data);
     } catch (e) {
         container.innerHTML = `<p class="text-red-600">${e.message}</p>`;
     }
 }
 
-// Alias au cas où l'HTML appelle sans le 's'
 async function generateRecommendation() { return generateRecommendations(); }
 
 function renderRecommendations(plan) {
     const container = document.getElementById('recommendations-container');
     if (!container) return;
-    const rec = plan.recommendations || plan;
-    const sections = [];
-
-    // Destinations
-    if (rec.destinations && rec.destinations.length) {
-        sections.push(`
-            <div>
-                <h4 class="font-semibold mb-2">Destinations suggérées</h4>
-                <ul class="list-disc ml-5 space-y-1">
-                    ${rec.destinations.map(d => `<li>${d.destination || d}</li>`).join('')}
-                </ul>
-            </div>`);
+    let html = '';
+    
+    if (plan.destinations && plan.destinations.length > 0) {
+        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-green-700 border-b-2 border-green-200 pb-2">🏞️ Destinations</h4><div class="space-y-2">';
+        plan.destinations.forEach(d => { 
+            html += `<div class="p-3 bg-green-50 border-l-4 border-green-500 rounded">${d}</div>`; 
+        });
+        html += '</div></div>';
     }
-
-    // Hébergements
-    if (rec.accommodations && rec.accommodations.length) {
-        sections.push(`
-            <div>
-                <h4 class="font-semibold mb-2">Hébergements</h4>
-                <ul class="list-disc ml-5 space-y-1">
-                    ${rec.accommodations.map(h => `<li>${h.hebergement || h} — énergie: ${h.energie ?? '-'} kWh — score éco: ${h.eco_score ?? '-'}</li>`).join('')}
-                </ul>
-            </div>`);
+    if (plan.accommodations && plan.accommodations.length > 0) {
+        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-blue-700 border-b-2 border-blue-200 pb-2">🏨 Hébergements</h4><div class="space-y-2">';
+        plan.accommodations.forEach(a => { 
+            html += `<div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">${a}</div>`; 
+        });
+        html += '</div></div>';
     }
-
-    // Activités
-    if (rec.activities && rec.activities.length) {
-        sections.push(`
-            <div>
-                <h4 class="font-semibold mb-2">Activités</h4>
-                <ul class="list-disc ml-5 space-y-1">
-                    ${rec.activities.map(a => `<li>${a.activite || a} ${a.impact ? `— impact: ${a.impact}` : ''}</li>`).join('')}
-                </ul>
-            </div>`);
+    if (plan.activities && plan.activities.length > 0) {
+        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-purple-700 border-b-2 border-purple-200 pb-2">🎯 Activités</h4><div class="space-y-2">';
+        plan.activities.forEach(a => { 
+            html += `<div class="p-3 bg-purple-50 border-l-4 border-purple-500 rounded">${a}</div>`; 
+        });
+        html += '</div></div>';
     }
-
-    // Transport
-    if (rec.transport && rec.transport.length) {
-        sections.push(`
-            <div>
-                <h4 class="font-semibold mb-2">Transport</h4>
-                <ul class="list-disc ml-5 space-y-1">
-                    ${rec.transport.map(t => `<li>${t.transport || t} — CO2 estimé: ${t.estimated_carbon ?? '-'} kg — score éco: ${t.eco_score ?? '-'}</li>`).join('')}
-                </ul>
-            </div>`);
-    }
-
-    // Résumé global si disponible
-    const summaryBits = [];
-    if (typeof plan.total_eco_score !== 'undefined') summaryBits.push(`Score éco total: <strong>${plan.total_eco_score}</strong>`);
-    if (typeof plan.estimated_carbon_footprint !== 'undefined') summaryBits.push(`Empreinte carbone estimée: <strong>${plan.estimated_carbon_footprint}</strong> kg`);
-    if (summaryBits.length) {
-        sections.unshift(`<div class="text-sm text-gray-700">${summaryBits.join(' · ')}</div>`);
-    }
-
-    if (!sections.length) {
-        container.innerHTML = '<p class="text-gray-500">Aucune recommandation trouvée pour ce profil.</p>';
-        return;
-    }
-    container.innerHTML = `<div class="space-y-4">${sections.join('')}</div>`;
+    if (plan.message) html += `<div class="p-4 bg-gray-100 rounded-lg border border-gray-300">${plan.message}</div>`;
+    if (!html) html = '<p class="text-gray-500 text-center py-8">Aucune recommandation disponible</p>';
+    container.innerHTML = html;
 }
 
 // ==================== HOME ====================
@@ -137,12 +119,23 @@ async function loadHomeData() {
 }
 
 // ==================== RECHERCHE ====================
+function clearSearchFilters() {
+    document.getElementById('filter-text').value = '';
+    document.getElementById('filter-energy').value = '';
+    document.getElementById('filter-location').value = '';
+    document.getElementById('filter-type').value = '';
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('search-results-count').innerHTML = '';
+}
+
 async function performSearch() {
     const text = document.getElementById('filter-text').value;
     const energy = document.getElementById('filter-energy').value;
-    const location = document.getElementById('filter-location') ? document.getElementById('filter-location').value : '';
+    const location = document.getElementById('filter-location').value;
+    const type = document.getElementById('filter-type').value;
     
     const resultsDiv = document.getElementById('search-results');
+    const countDiv = document.getElementById('search-results-count');
     resultsDiv.innerHTML = '<p class="text-gray-500">Recherche en cours...</p>';
     
     try {
@@ -159,6 +152,7 @@ async function performSearch() {
         });
 
         const data = await response.json();
+        countDiv.innerHTML = `<span class="font-semibold">${data.results?.length || 0}</span> résultat(s) trouvé(s)`;
         let mapped = (data.results || []).map(r => ({
             subject: r.entity || r.subject || '-',
             predicate: r.property || r.predicate || r.type || '-',
