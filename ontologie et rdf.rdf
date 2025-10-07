@@ -1,0 +1,472 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <Ontology rdf:about="http://example.org/ecotourismef"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.org/ecotourisme#aCertification -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#aCertification">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Hébergement"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aEmpreinte -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#aEmpreinte">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Transport"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#choisit -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#choisit">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#Destination"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#implique -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#implique">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#organise -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#organise">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#ÉvénementCulturel"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#propose -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#propose">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#Hébergement"/>
+    </ObjectProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#utilise -->
+
+    <ObjectProperty rdf:about="http://example.org/ecotourisme#utilise">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#GastronomieLocale"/>
+        <rdfs:range rdf:resource="http://example.org/ecotourisme#RessourceNaturelle"/>
+    </ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.org/ecotourisme#aAccessibilité -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aAccessibilité">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aAuthenticitéLocale -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aAuthenticitéLocale">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aBiodiversité -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aBiodiversité">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aBudget -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aBudget">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aCO2 -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aCO2">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aConsommationÉnergie -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aConsommationÉnergie">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Hébergement"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aCritèreRespecté -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aCritèreRespecté">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aFragilité -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aFragilité">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#RessourceNaturelle"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aImpactEnvironnemental -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aImpactEnvironnemental">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aInitiativeDurable -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aInitiativeDurable">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aLocalisation -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aLocalisation">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Destination"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aNiveauCertification -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aNiveauCertification">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aProduitLocal -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aProduitLocal">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#GastronomieLocale"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aProfilÉcologique -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aProfilÉcologique">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aPréférence -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aPréférence">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#Voyageur"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aRéductionPossible -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aRéductionPossible">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- http://example.org/ecotourisme#aSaison -->
+
+    <DatatypeProperty rdf:about="http://example.org/ecotourisme#aSaison">
+        <rdfs:domain rdf:resource="http://example.org/ecotourisme#ÉvénementCulturel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.org/ecotourisme#ActivitéTouristique -->
+
+    <Class rdf:about="http://example.org/ecotourisme#ActivitéTouristique"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#Avion -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Avion">
+        <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#CertificationÉcologique -->
+
+    <Class rdf:about="http://example.org/ecotourisme#CertificationÉcologique"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#CommunautéLocale -->
+
+    <Class rdf:about="http://example.org/ecotourisme#CommunautéLocale"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#Covoiturage -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Covoiturage">
+        <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#Destination -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Destination"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#EmpreinteCarbone -->
+
+    <Class rdf:about="http://example.org/ecotourisme#EmpreinteCarbone"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#GastronomieLocale -->
+
+    <Class rdf:about="http://example.org/ecotourisme#GastronomieLocale"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#Hébergement -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Hébergement">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://example.org/ecotourisme#aCertification"/>
+                <someValuesFrom rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#RessourceNaturelle -->
+
+    <Class rdf:about="http://example.org/ecotourisme#RessourceNaturelle"/>
+    
+
+
+    <!-- http://example.org/ecotourisme#Train -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Train">
+        <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#Transport -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Transport">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://example.org/ecotourisme#aEmpreinte"/>
+                <someValuesFrom rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#TransportPublic -->
+
+    <Class rdf:about="http://example.org/ecotourisme#TransportPublic">
+        <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#Voyageur -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Voyageur">
+        <rdfs:subClassOf>
+            <Restriction>
+                <onProperty rdf:resource="http://example.org/ecotourisme#choisit"/>
+                <someValuesFrom rdf:resource="http://example.org/ecotourisme#Destination"/>
+            </Restriction>
+        </rdfs:subClassOf>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#Vélo -->
+
+    <Class rdf:about="http://example.org/ecotourisme#Vélo">
+        <rdfs:subClassOf rdf:resource="http://example.org/ecotourisme#Transport"/>
+    </Class>
+    
+
+
+    <!-- http://example.org/ecotourisme#ÉvénementCulturel -->
+
+    <Class rdf:about="http://example.org/ecotourisme#ÉvénementCulturel"/>
+
+<!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Étape : Individus
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+-->
+<!-- Voyageur -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#Ali">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#Voyageur"/>
+  <aBudget rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1500.0</aBudget>
+  <aPréférence rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Culture et nature</aPréférence>
+  <aProfilÉcologique rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Éco-responsable</aProfilÉcologique>
+  <choisit rdf:resource="http://example.org/ecotourisme#TunisCarthage"/>
+</NamedIndividual>
+
+<!-- Destination -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#TunisCarthage">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#Destination"/>
+  <aLocalisation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tunisie</aLocalisation>
+  <aBiodiversité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Riche flore et faune méditerranéennes</aBiodiversité>
+  <propose rdf:resource="http://example.org/ecotourisme#HotelEcoGreen"/>
+  <organise rdf:resource="http://example.org/ecotourisme#FestivalMedina"/>
+</NamedIndividual>
+
+<!-- Hébergement -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#HotelEcoGreen">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#Hébergement"/>
+  <aConsommationÉnergie rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">120.5</aConsommationÉnergie>
+  <aCertification rdf:resource="http://example.org/ecotourisme#LabelGreen"/>
+</NamedIndividual>
+
+<!-- Certification -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#LabelGreen">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#CertificationÉcologique"/>
+  <aNiveauCertification rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gold</aNiveauCertification>
+  <aCritèreRespecté rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gestion eau, énergie renouvelable, recyclage</aCritèreRespecté>
+</NamedIndividual>
+
+<!-- Transport -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#TrainExpress">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#Train"/>
+  <aEmpreinte rdf:resource="http://example.org/ecotourisme#EmpreinteTrain"/>
+</NamedIndividual>
+
+<!-- EmpreinteCarbone -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#EmpreinteTrain">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#EmpreinteCarbone"/>
+  <aCO2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">45.0</aCO2>
+  <aRéductionPossible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Comparé à l’avion, 70% de moins</aRéductionPossible>
+</NamedIndividual>
+
+<!-- ActivitéTouristique -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#RandonnéeAtlas">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#ActivitéTouristique"/>
+  <aAuthenticitéLocale rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Randonnée avec guides locaux berbères</aAuthenticitéLocale>
+  <aImpactEnvironnemental rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Faible impact, respect de la faune</aImpactEnvironnemental>
+  <implique rdf:resource="http://example.org/ecotourisme#CommunauteBerbere"/>
+</NamedIndividual>
+
+<!-- CommunautéLocale -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#CommunauteBerbere">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#CommunautéLocale"/>
+  <aInitiativeDurable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Artisanat équitable et accueil touristique</aInitiativeDurable>
+</NamedIndividual>
+
+<!-- ÉvénementCulturel -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#FestivalMedina">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#ÉvénementCulturel"/>
+  <aSaison rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Été</aSaison>
+</NamedIndividual>
+
+<!-- GastronomieLocale -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#CuisineTunisienne">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#GastronomieLocale"/>
+  <aProduitLocal rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</aProduitLocal>
+  <utilise rdf:resource="http://example.org/ecotourisme#OliveLocale"/>
+</NamedIndividual>
+
+<!-- RessourceNaturelle -->
+<NamedIndividual rdf:about="http://example.org/ecotourisme#OliveLocale">
+  <rdf:type rdf:resource="http://example.org/ecotourisme#RessourceNaturelle"/>
+  <aFragilité rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Risque de sécheresse</aFragilité>
+</NamedIndividual>
+
+</rdf:RDF>
