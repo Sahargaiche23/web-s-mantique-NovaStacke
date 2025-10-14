@@ -267,6 +267,12 @@ Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue.
 ---
 
 **Développé avec ❤️ et 🌱 pour un tourisme plus durable**
+<img width="1864" height="873" alt="image" src="https://github.com/user-attachments/assets/2c7afebb-1684-4db3-983f-5cfc8976334a" />
+<img width="1790" height="876" alt="image" src="https://github.com/user-attachments/assets/71d66820-19f7-4f65-a494-cc40fd250d8d" />
+<img width="1790" height="876" alt="image" src="https://github.com/user-attachments/assets/31d71ed3-177a-4d1f-b2ef-91f8bb15cf54" />
+<img width="1790" height="876" alt="image" src="https://github.com/user-attachments/assets/cb4ccc73-f7f6-45a2-ac00-7110875700d7" />
+<img width="1790" height="876" alt="image" src="https://github.com/user-attachments/assets/c9eb292d-bf71-475e-9b53-1fed74780be3" />
+
 <img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/7a4ca259-a853-4f9a-abce-ec2aac38f7fb" />
 <img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/e6bf92cd-8c45-487c-b7f6-631560c721c0" />
 <img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/42b216aa-df55-4c3a-a310-05a1561721bc" />
