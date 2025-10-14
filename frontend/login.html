@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - EcoTravel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-green-400 via-green-500 to-green-600 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-green-600 text-white p-8 text-center">
+                <h1 class="text-3xl font-bold mb-2">🌍 EcoTravel</h1>
+                <p class="text-green-100">Connectez-vous à votre compte</p>
+            </div>
+
+            <!-- Login Form -->
+            <div class="p-8">
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <!-- Alert Messages -->
+                    <div id="alert-container"></div>
+
+                    <!-- Username -->
+                    <div class="mb-6">
+                        <label for="username" class="block text-gray-700 font-semibold mb-2">
+                            👤 Nom d'utilisateur
+                        </label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500 transition duration-200"
+                            placeholder="Entrez votre nom d'utilisateur"
+                        >
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-6">
+                        <label for="password" class="block text-gray-700 font-semibold mb-2">
+                            🔒 Mot de passe
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required
+                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-green-500 transition duration-200"
+                            placeholder="Entrez votre mot de passe"
+                        >
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="mb-6 flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600" id="remember-me">
+                            <span class="ml-2 text-gray-700 text-sm">Se souvenir de moi</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        id="login-btn"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
+                    >
+                        Se connecter
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="my-6 border-t border-gray-300"></div>
+
+                <!-- Register Link -->
+                <div class="text-center">
+                    <p class="text-gray-600">
+                        Pas encore de compte ?
+                        <a href="register.html" class="text-green-600 hover:text-green-700 font-semibold">
+                            Créer un compte
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Demo Credentials -->
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-sm text-gray-700 font-semibold mb-2">🎯 Comptes de démonstration :</p>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p><strong>Admin:</strong> username: <code class="bg-gray-200 px-1 rounded">admin</code> | password: <code class="bg-gray-200 px-1 rounded">admin123</code></p>
+                        <p class="text-xs text-gray-500 mt-2">Vous pouvez créer votre propre compte voyageur</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+
+        function showAlert(message, type = 'error') {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'error' ? 'bg-red-50 border-red-500 text-red-700' : 'bg-green-50 border-green-500 text-green-700';
+            
+            alertContainer.innerHTML = `
+                <div class="${alertClass} border-l-4 p-4 mb-4 rounded">
+                    <p class="font-semibold">${message}</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('login-btn');
+            
+            // Disable button
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Connexion en cours...';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Store tokens
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showAlert('Connexion réussie ! Redirection...', 'success');
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1000);
+                } else {
+                    showAlert(data.error || 'Erreur de connexion');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Se connecter';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Erreur de connexion au serveur');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Se connecter';
+            }
+        }
+
+        // Check if already logged in
+        window.onload = function() {
+            const token = localStorage.getItem('access_token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (token) {
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+        };
+    </script>
+</body>
+</html>

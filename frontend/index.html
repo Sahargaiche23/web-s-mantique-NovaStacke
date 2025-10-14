@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTravel - Voyage Sémantique Écologique</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-green-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🌍 EcoTravel</h1>
+            <div class="flex items-center space-x-4">
+                <a href="#" onclick="showPage('home')" class="hover:underline">Accueil</a>
+                <a href="#" onclick="showPage('search')" class="hover:underline">Recherche</a>
+                <a href="#" onclick="showPage('recommendations')" class="hover:underline">Recommandations</a>
+                <a href="#" onclick="showPage('sparql')" class="hover:underline">SPARQL</a>
+                <a href="#" onclick="showPage('visualizations')" class="hover:underline">Visualisations</a>
+                <a href="#" onclick="showPage('ontology')" class="hover:underline">Ontologie</a>
+                <a href="#" onclick="showPage('chat')" class="hover:underline">Chat</a>
+                
+                <!-- User Menu -->
+                <div id="user-menu" class="flex items-center space-x-2 border-l border-green-500 pl-4 ml-2">
+                    <!-- Will be populated by JS -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <!-- Page Accueil -->
+        <div id="page-home" class="page-content">
+            <div class="mb-8">
+                <h2 class="text-4xl font-bold mb-2">🌍 Dashboard Écologique</h2>
+                <p class="text-gray-600 text-lg">Statistiques en temps réel de l'ontologie EcoTravel</p>
+                <div class="flex items-center gap-2 mt-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-sm text-gray-500" id="last-updated">Dernière mise à jour: ...</span>
+                </div>
+            </div>
+
+            <!-- Statistiques principales -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-blue-100 text-sm font-medium">Total Entités</h3>
+                            <p class="text-3xl font-bold" id="stat-total-entities">-</p>
+                        </div>
+                        <div class="text-blue-200 text-4xl">📊</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-green-100 text-sm font-medium">Score Écologique</h3>
+                            <p class="text-3xl font-bold" id="stat-eco-score">-</p>
+                            <p class="text-green-100 text-sm">sur 100</p>
+                        </div>
+                        <div class="text-green-200 text-4xl">🌱</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-purple-100 text-sm font-medium">Empreinte CO2</h3>
+                            <p class="text-3xl font-bold" id="stat-carbon-footprint">-</p>
+                            <p class="text-purple-100 text-sm">kg moyen</p>
+                        </div>
+                        <div class="text-purple-200 text-4xl">🌍</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-orange-100 text-sm font-medium">Triples RDF</h3>
+                            <p class="text-3xl font-bold" id="stat-total-triples">-</p>
+                        </div>
+                        <div class="text-orange-200 text-4xl">🔗</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Détail par classe -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                <!-- Destinations -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-2xl">🏖️</span>
+                            Destinations
+                        </h3>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold" id="dest-count">-</span>
+                    </div>
+                    <div id="dest-details" class="space-y-2">
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Hébergements -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-2xl">🏨</span>
+                            Hébergements
+                        </h3>
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold" id="heb-count">-</span>
+                    </div>
+                    <div id="heb-details" class="space-y-2">
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Activités -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-2xl">🎯</span>
+                            Activités
+                        </h3>
+                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold" id="act-count">-</span>
+                    </div>
+                    <div id="act-details" class="space-y-2">
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Transports -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-2xl">🚆</span>
+                            Transports
+                        </h3>
+                        <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-semibold" id="trans-count">-</span>
+                    </div>
+                    <div id="trans-details" class="space-y-2">
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-2xl">🏆</span>
+                            Certifications
+                        </h3>
+                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold" id="cert-count">-</span>
+                    </div>
+                    <div id="cert-details" class="space-y-2">
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                        <div class="animate-pulse bg-gray-200 h-4 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Vue d'ensemble -->
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 text-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <span class="text-2xl">📈</span>
+                            Vue d'ensemble
+                        </h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 text-sm">Taux de couverture</span>
+                            <span class="font-semibold" id="coverage-rate">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 text-sm">Entités par classe</span>
+                            <span class="font-semibold" id="avg-per-class">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-300 text-sm">Dernière modification</span>
+                            <span class="font-semibold text-xs" id="last-modified">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    Actions Rapides
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="showPage('search')" class="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition duration-200 flex flex-col items-center gap-2">
+                        <span class="text-2xl">🔍</span>
+                        <span class="font-semibold">Rechercher</span>
+                    </button>
+                    <button onclick="showPage('recommendations')" class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg transition duration-200 flex flex-col items-center gap-2">
+                        <span class="text-2xl">🤖</span>
+                        <span class="font-semibold">Recommander</span>
+                    </button>
+                    <button onclick="showPage('sparql')" class="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-lg transition duration-200 flex flex-col items-center gap-2">
+                        <span class="text-2xl">💻</span>
+                        <span class="font-semibold">SPARQL</span>
+                    </button>
+                    <button onclick="showPage('visualizations')" class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-lg transition duration-200 flex flex-col items-center gap-2">
+                        <span class="text-2xl">📊</span>
+                        <span class="font-semibold">Visualiser</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Recherche -->
+        <div id="page-search" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">🔍 Recherche Avancée</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="font-bold mb-4 text-xl text-gray-800">Filtres Multi-Critères</h3>
+                    
+                    <!-- Recherche textuelle -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">🔎 Recherche textuelle</label>
+                        <input type="text" id="filter-text" placeholder="Ex: Tunis, écologique, biodiversité..." 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    
+                    <!-- Type d'entité -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📂 Type</label>
+                        <select id="filter-type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                            <option value="">Tous les types</option>
+                            <option value="Destination">Destinations</option>
+                            <option value="Hébergement">Hébergements</option>
+                            <option value="ActivitéTouristique">Activités</option>
+                            <option value="Transport">Transports</option>
+                            <option value="CertificationÉcologique">Certifications</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Énergie max -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">⚡ Consommation énergétique max</label>
+                        <input type="number" id="filter-energy" placeholder="Ex: 150 kWh" 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                        <span class="text-xs text-gray-500">Vide = pas de limite</span>
+                    </div>
+                    
+                    <!-- Localisation -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📍 Localisation</label>
+                        <input type="text" id="filter-location" placeholder="Ex: Tunisie, Maroc..." 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <button onclick="performSearch()" class="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg font-semibold transition duration-200 shadow-md">
+                        Rechercher
+                    </button>
+                    <button onclick="clearSearchFilters()" class="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded-lg transition duration-200">
+                        Réinitialiser
+                    </button>
+                </div>
+                
+                <div class="col-span-1 lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="font-bold mb-4 text-xl text-gray-800">Résultats en Temps Réel</h3>
+                    <div id="search-results-count" class="text-sm text-gray-600 mb-3"></div>
+                    <div id="search-results" class="overflow-auto" style="max-height: 600px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Recommandations -->
+        <div id="page-recommendations" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">🤖 Recommandations IA Personnalisées</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="font-bold mb-4 text-xl text-gray-800">👤 Configuration Profil</h3>
+                    
+                    <!-- Budget -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">💰 Budget (€)</label>
+                        <input type="number" id="user-budget" value="1500" placeholder="Budget en euros" 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                        <div class="mt-2 flex justify-between text-xs text-gray-500">
+                            <span>500€</span>
+                            <span id="budget-display" class="font-semibold text-green-600">1500€</span>
+                            <span>5000€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Profil écologique -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">🌱 Profil écologique</label>
+                        <select id="user-eco-profile" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                            <option value="Éco-responsable">🌿 Éco-responsable (Priorité environnement)</option>
+                            <option value="Modéré">🌾 Modéré (Équilibré)</option>
+                            <option value="Flexible">🌻 Flexible (Confort et écologie)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Préférences -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">❤️ Préférences (optionnel)</label>
+                        <textarea id="user-preferences" placeholder="Ex: nature, culture, plongée, randonnée..." 
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
+                                  rows="3"></textarea>
+                    </div>
+                    
+                    <button onclick="generateRecommendations()" class="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg font-semibold transition duration-200 shadow-md">
+                        🚀 Générer Recommandations
+                    </button>
+                    
+                    <!-- Score écologique estimé -->
+                    <div id="estimated-eco-score" class="mt-6 p-4 bg-green-50 border-2 border-green-200 rounded-lg hidden">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-1">Score Écologique Estimé</p>
+                            <p class="text-4xl font-bold text-green-600" id="eco-score-value">-</p>
+                            <p class="text-xs text-gray-500 mt-1">sur 100</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-span-1 lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="font-bold mb-4 text-xl text-gray-800">📋 Vos Recommandations</h3>
+                    
+                    <!-- Résumé global -->
+                    <div id="recommendations-summary" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded hidden">
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p class="text-sm text-gray-600">Empreinte Carbone</p>
+                                <p class="text-2xl font-bold text-blue-600" id="carbon-footprint">-</p>
+                                <p class="text-xs text-gray-500">kg CO2</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Score Éco Total</p>
+                                <p class="text-2xl font-bold text-green-600" id="total-eco-score">-</p>
+                                <p class="text-xs text-gray-500">sur 100</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="recommendations-container" class="overflow-auto" style="max-height: 600px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page SPARQL -->
+        <div id="page-sparql" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Requêtes SPARQL</h2>
+            <div class="grid grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Requêtes</h3>
+                    <div id="sparql-queries-list"></div>
+                </div>
+                <div class="col-span-3 space-y-6">
+                    <div class="bg-white p-6 rounded shadow">
+                        <textarea id="sparql-editor" rows="8" class="w-full p-2 border rounded font-mono"></textarea>
+                        <button onclick="executeSPARQL()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded">Exécuter</button>
+                    </div>
+                    <div class="bg-white p-6 rounded shadow">
+                        <div id="sparql-results"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Visualisations -->
+        <div id="page-visualizations" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Visualisations</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-carbon"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-energy"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-eco-scores"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <canvas id="chart-certifications"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Ontologie -->
+        <div id="page-ontology" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Explorer l'Ontologie</h2>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Classes</h3>
+                    <div id="ontology-classes"></div>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Propriétés</h3>
+                    <div id="ontology-properties"></div>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Individus</h3>
+                    <div id="ontology-individuals"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Chatbot IA -->
+        <div id="page-chat" class="page-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Assistant IA</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded shadow flex flex-col" style="height: 520px;">
+                    <div id="chat-window" class="flex-1 overflow-y-auto space-y-3 pr-2">
+                        <!-- Messages -->
+                    </div>
+                    <div class="mt-4 flex flex-col gap-2">
+                        <label class="flex items-center gap-2 text-sm text-gray-600">
+                            <input id="chat-llm-toggle" type="checkbox" class="accent-green-600" />
+                            Activer IA avancée (GPT)
+                        </label>
+                        <div class="flex gap-2">
+                        <input id="chat-input" type="text" class="flex-1 p-2 border rounded" placeholder="Posez une question... (ex: meilleures destinations écologiques)">
+                        <button onclick="sendChatMessage()" class="bg-green-600 text-white px-4 py-2 rounded">Envoyer</button>
+                        <button onclick="clearChat()" class="bg-gray-200 px-4 py-2 rounded">Effacer</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded shadow">
+                    <h3 class="font-bold mb-4">Suggestions</h3>
+                    <div id="chat-suggestions" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
