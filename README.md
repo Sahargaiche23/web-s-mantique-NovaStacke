@@ -282,7 +282,6 @@ Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue.
 <img width="1853" height="925" alt="image" src="https://github.com/user-attachments/assets/50f0c12f-4e48-489c-9d34-bb534515396c" />
 
 
-
-
+file:///home/sahar/Vid%C3%A9os/Captures%20vid%C3%A9o/Capture%20vid%C3%A9o%20du%202025-10-21%2019-34-55.webm
 
 
