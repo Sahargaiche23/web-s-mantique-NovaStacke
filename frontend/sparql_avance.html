@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur SPARQL Avancé - EcoTravel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sparql/sparql.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🌍 EcoTravel - SPARQL Avancé</h1>
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="hover:underline">Accueil</a>
+                <a href="recommandations_avance.html" class="hover:underline">Recommandations IA</a>
+                <a href="sparql_avance.html" class="font-bold text-green-300">SPARQL</a>
+                
+                <!-- User Menu -->
+                <div id="user-menu" class="flex items-center space-x-2 border-l border-green-500 pl-4 ml-2">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-4xl font-bold mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                💻 Éditeur SPARQL Avancé
+            </h2>
+            <p class="text-gray-600 text-lg">Interrogez et modifiez l'ontologie écotouristique</p>
+            <div class="mt-4 flex items-center gap-4">
+                <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold">
+                    📊 Total requêtes: <span id="total-queries">0</span>
+                </span>
+                <span class="text-sm text-gray-500" id="last-query-time">Aucune requête exécutée</span>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Panneau Gauche - Actions Rapides -->
+            <div class="space-y-4">
+                <!-- Actions CRUD -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span class="text-2xl">⚡</span>
+                        Actions Rapides
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <button onclick="loadQueryTemplate('select')" 
+                                class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2">
+                            <span class="text-xl">🔍</span>
+                            <span class="font-semibold">SELECT - Interroger</span>
+                        </button>
+                        
+                        <button onclick="loadQueryTemplate('insert')" 
+                                class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2">
+                            <span class="text-xl">➕</span>
+                            <span class="font-semibold">INSERT - Ajouter</span>
+                        </button>
+                        
+                        <button onclick="loadQueryTemplate('delete')" 
+                                class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2">
+                            <span class="text-xl">🗑️</span>
+                            <span class="font-semibold">DELETE - Supprimer</span>
+                        </button>
+                        
+                        <button onclick="loadQueryTemplate('update')" 
+                                class="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg transition flex items-center justify-center gap-2">
+                            <span class="text-xl">✏️</span>
+                            <span class="font-semibold">UPDATE - Modifier</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Requêtes Prédéfinies -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span class="text-2xl">📋</span>
+                        Requêtes Prédéfinies
+                    </h3>
+                    
+                    <div id="predefined-queries" class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4">📈 Statistiques</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span>Triples RDF:</span>
+                            <span class="font-bold" id="stat-triples">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Classes:</span>
+                            <span class="font-bold" id="stat-classes">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Propriétés:</span>
+                            <span class="font-bold" id="stat-properties">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Individus:</span>
+                            <span class="font-bold" id="stat-individuals">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panneau Principal - Éditeur et Résultats -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Éditeur de Requêtes -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <span class="text-2xl">💻</span>
+                            Éditeur de Requêtes
+                        </h3>
+                        <div class="flex gap-2">
+                            <button onclick="clearEditor()" 
+                                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition text-sm">
+                                Effacer
+                            </button>
+                            <button onclick="formatQuery()" 
+                                    class="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition text-sm">
+                                Formater
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <textarea id="sparql-editor"></textarea>
+                    
+                    <div class="mt-4 flex gap-3">
+                        <button onclick="executeQuery()" 
+                                class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-lg">
+                            ▶️ Exécuter la Requête
+                        </button>
+                        <button onclick="exportResults()" 
+                                class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                            📥 Exporter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Résultats -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <span class="text-2xl">📊</span>
+                            Résultats
+                        </h3>
+                        <span class="text-sm text-gray-500" id="result-count">0 résultat</span>
+                    </div>
+                    
+                    <div id="results-container" class="overflow-x-auto max-h-96">
+                        <div class="text-center py-20 text-gray-400">
+                            <div class="text-6xl mb-4">📋</div>
+                            <p class="text-lg">Aucun résultat</p>
+                            <p class="text-sm mt-2">Exécutez une requête pour voir les résultats</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historique -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span class="text-2xl">📜</span>
+                        Historique des Requêtes
+                    </h3>
+                    
+                    <div id="query-history" class="space-y-2 max-h-64 overflow-y-auto">
+                        <p class="text-gray-400 text-center py-8">Aucun historique</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let editor;
+        let currentUser = null;
+
+        // Initialize CodeMirror
+        window.addEventListener('DOMContentLoaded', () => {
+            editor = CodeMirror.fromTextArea(document.getElementById('sparql-editor'), {
+                mode: 'application/sparql-query',
+                theme: 'monokai',
+                lineNumbers: true,
+                lineWrapping: true,
+                autofocus: true,
+                height: '300px'
+            });
+            
+            editor.setSize(null, 300);
+            
+            initAuth();
+            loadPredefinedQueries();
+            loadStatistics();
+            loadQueryCount();
+            loadHistory();
+        });
+
+        // Auth
+        function initAuth() {
+            const token = localStorage.getItem('access_token');
+            const userStr = localStorage.getItem('user');
+            
+            if (token && userStr) {
+                try {
+                    currentUser = JSON.parse(userStr);
+                    updateUserMenu(true);
+                } catch (e) {
+                    updateUserMenu(false);
+                }
+            } else {
+                updateUserMenu(false);
+            }
+        }
+
+        function updateUserMenu(isLoggedIn) {
+            const userMenu = document.getElementById('user-menu');
+            if (!userMenu) return;
+            
+            if (isLoggedIn && currentUser) {
+                const roleIcon = currentUser.role === 'admin' ? '👑' : '👤';
+                userMenu.innerHTML = `
+                    <span class="text-sm">${roleIcon} ${currentUser.username}</span>
+                    ${currentUser.role === 'admin' ? '<a href="admin.html" class="text-xs bg-purple-500 hover:bg-purple-600 px-2 py-1 rounded">Admin</a>' : ''}
+                    <button onclick="logout()" class="text-xs bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition">
+                        Déconnexion
+                    </button>
+                `;
+            } else {
+                userMenu.innerHTML = `
+                    <a href="login.html" class="text-sm bg-white text-green-600 hover:bg-green-50 px-4 py-2 rounded transition font-semibold">
+                        Connexion
+                    </a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('access_token');
+            return token ? {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'} : {'Content-Type': 'application/json'};
+        }
+
+        // Query Templates
+        function loadQueryTemplate(type) {
+            const templates = {
+                'select': `PREFIX eco: <http://example.org/ecotourisme#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?destination ?localisation
+WHERE {
+  ?destination rdf:type eco:Destination .
+  ?destination eco:aLocalisation ?localisation .
+}
+LIMIT 10`,
+                'insert': `# NOTE: RDFLib ne supporte pas INSERT DATA directement
+# Utilisez Python/backend pour ajouter des données
+# Exemple via l'API:
+# POST /api/ontology/add-destination
+# {"name": "Paris", "location": "France", "score": 85}
+
+PREFIX eco: <http://example.org/ecotourisme#>
+SELECT ?destination ?nom
+WHERE {
+  ?destination rdf:type eco:Destination .
+  ?destination eco:nom ?nom .
+}`,
+                'delete': `# NOTE: RDFLib ne supporte pas DELETE directement en SPARQL
+# Utilisez Python/backend pour supprimer des données
+# Vous pouvez seulement faire des SELECT pour visualiser
+
+PREFIX eco: <http://example.org/ecotourisme#>
+SELECT ?destination
+WHERE {
+  ?destination rdf:type eco:Destination .
+}`,
+                'update': `# NOTE: RDFLib ne supporte pas UPDATE directement en SPARQL
+# Utilisez Python/backend pour modifier des données
+# Vous pouvez faire des SELECT pour visualiser les données
+
+PREFIX eco: <http://example.org/ecotourisme#>
+SELECT ?destination ?score
+WHERE {
+  ?destination rdf:type eco:Destination .
+  OPTIONAL { ?destination eco:scoreÉcologique ?score . }
+}`
+            };
+            
+            editor.setValue(templates[type] || '');
+        }
+
+        function clearEditor() {
+            editor.setValue('');
+        }
+
+        function formatQuery() {
+            const query = editor.getValue();
+            // Simple formatting
+            const formatted = query
+                .replace(/PREFIX/g, '\nPREFIX')
+                .replace(/SELECT/g, '\nSELECT')
+                .replace(/WHERE/g, '\nWHERE')
+                .replace(/INSERT/g, '\nINSERT')
+                .replace(/DELETE/g, '\nDELETE')
+                .trim();
+            editor.setValue(formatted);
+        }
+
+        // Execute Query
+        async function executeQuery() {
+            const query = editor.getValue().trim();
+            
+            if (!query) {
+                alert('Veuillez entrer une requête SPARQL');
+                return;
+            }
+            
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '<div class="text-center py-10"><div class="animate-spin text-4xl">⏳</div><p class="mt-2">Exécution...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/sparql/execute`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.results);
+                    addToHistory(query, data.results.length);
+                    loadQueryCount();  // Refresh count
+                } else {
+                    resultsContainer.innerHTML = `<div class="text-red-600 p-4 bg-red-50 rounded">${data.error || 'Erreur'}</div>`;
+                }
+            } catch (error) {
+                resultsContainer.innerHTML = `<div class="text-red-600 p-4 bg-red-50 rounded">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            const countEl = document.getElementById('result-count');
+            
+            if (!results || results.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Aucun résultat</p>';
+                countEl.textContent = '0 résultat';
+                return;
+            }
+            
+            countEl.textContent = `${results.length} résultat${results.length > 1 ? 's' : ''}`;
+            
+            // Get all keys
+            const keys = Object.keys(results[0]);
+            
+            let html = '<table class="min-w-full divide-y divide-gray-200">';
+            html += '<thead class="bg-gray-50"><tr>';
+            keys.forEach(key => {
+                html += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${key}</th>`;
+            });
+            html += '</tr></thead>';
+            html += '<tbody class="bg-white divide-y divide-gray-200">';
+            
+            results.forEach((row, idx) => {
+                html += `<tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">`;
+                keys.forEach(key => {
+                    html += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${row[key] || '-'}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // History
+        function addToHistory(query, count) {
+            const history = JSON.parse(localStorage.getItem('sparql_history') || '[]');
+            history.unshift({
+                query: query.substring(0, 100) + (query.length > 100 ? '...' : ''),
+                fullQuery: query,
+                count: count,
+                timestamp: new Date().toLocaleString('fr-FR')
+            });
+            
+            // Keep only last 10
+            if (history.length > 10) history.pop();
+            
+            localStorage.setItem('sparql_history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('sparql_history') || '[]');
+            const container = document.getElementById('query-history');
+            
+            if (history.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-8">Aucun historique</p>';
+                return;
+            }
+            
+            container.innerHTML = history.map((item, idx) => `
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition cursor-pointer" 
+                     onclick='editor.setValue(${JSON.stringify(item.fullQuery)})'>
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <p class="text-sm font-mono text-gray-700">${item.query}</p>
+                            <p class="text-xs text-gray-500 mt-1">${item.count} résultat(s) • ${item.timestamp}</p>
+                        </div>
+                        <span class="text-xs text-gray-400">#${idx + 1}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Predefined Queries
+        async function loadPredefinedQueries() {
+            try {
+                const response = await fetch(`${API_BASE}/sparql/queries`);
+                const data = await response.json();
+                
+                const container = document.getElementById('predefined-queries');
+                container.innerHTML = (data.queries || []).map(query => `
+                    <button onclick="loadPredefinedQuery('${query}')" 
+                            class="w-full text-left px-3 py-2 rounded hover:bg-indigo-50 text-sm transition">
+                        📝 ${query.replace(/_/g, ' ')}
+                    </button>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading queries:', error);
+            }
+        }
+
+        async function loadPredefinedQuery(queryName) {
+            try {
+                const response = await fetch(`${API_BASE}/sparql/predefined/${queryName}`);
+                const data = await response.json();
+                
+                if (data.query) {
+                    editor.setValue(data.query);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/ontology/statistics`);
+                const data = await response.json();
+                
+                document.getElementById('stat-triples').textContent = data.total_triples || 0;
+                document.getElementById('stat-classes').textContent = data.classes || 0;
+                document.getElementById('stat-properties').textContent = (data.object_properties || 0) + (data.datatype_properties || 0);
+                document.getElementById('stat-individuals').textContent = data.individuals || 0;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Query Count
+        async function loadQueryCount() {
+            try {
+                const response = await fetch(`${API_BASE}/sparql/count`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('total-queries').textContent = data.total_queries || 0;
+                    
+                    if (data.last_query_time) {
+                        const date = new Date(data.last_query_time);
+                        document.getElementById('last-query-time').textContent = 
+                            `Dernière requête: ${date.toLocaleString('fr-FR')}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading count:', error);
+            }
+        }
+
+        // Export
+        function exportResults() {
+            const container = document.getElementById('results-container');
+            const table = container.querySelector('table');
+            
+            if (!table) {
+                alert('Aucun résultat à exporter');
+                return;
+            }
+            
+            // Simple CSV export
+            let csv = '';
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('th, td');
+                const rowData = Array.from(cols).map(col => col.textContent).join(',');
+                csv += rowData + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sparql_results.csv';
+            a.click();
+        }
+    </script>
+</body>
+</html>

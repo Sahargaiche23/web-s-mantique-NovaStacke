@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommandations Avancées - EcoTravel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🌍 EcoTravel</h1>
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="hover:underline">Accueil</a>
+                <a href="index.html#search" class="hover:underline">Recherche</a>
+                <a href="index.html#recommendations" class="hover:underline">Recommandations</a>
+                <a href="recommandations_avance.html" class="font-bold text-green-300">Recommandations IA</a>
+                <a href="index.html#sparql" class="hover:underline">SPARQL</a>
+                
+                <!-- User Menu -->
+                <div id="user-menu" class="flex items-center space-x-2 border-l border-green-500 pl-4 ml-2">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                🤖 Recommandations IA Avancées
+            </h2>
+            <p class="text-gray-600 text-lg">Obtenez des suggestions personnalisées pour vos voyages écologiques</p>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Panneau Préférences -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span class="text-2xl">📋</span>
+                    Vos Préférences
+                </h3>
+                
+                <form id="preferencesForm" onsubmit="handleGenerateRecommendations(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="destination">
+                            Destination souhaitée
+                        </label>
+                        <input type="text" id="destination" 
+                               placeholder="Ex: Marrakech, Tunisie, Algérie..." 
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="budget">
+                            Budget (€)
+                        </label>
+                        <input type="number" id="budget" 
+                               placeholder="1500" 
+                               min="0" 
+                               step="100"
+                               value="1500"
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                               required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="type_voyage">
+                            Type de voyage
+                        </label>
+                        <select id="type_voyage" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <option value="Aventure">🏔️ Aventure</option>
+                            <option value="Détente">🏖️ Détente</option>
+                            <option value="Culture">🏛️ Culture</option>
+                            <option value="Nature">🌿 Nature</option>
+                            <option value="Gastronomie">🍽️ Gastronomie</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="duree">
+                            Durée du séjour
+                        </label>
+                        <select id="duree" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <option value="Weekend (2-3 jours)">Weekend (2-3 jours)</option>
+                            <option value="Semaine (7-10 jours)" selected>Semaine (7-10 jours)</option>
+                            <option value="Long séjour (10+ jours)">Long séjour (10+ jours)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2" for="priorite_eco">
+                            Priorité écologique: <span id="ecoValue" class="font-bold text-purple-600">7</span>/10
+                        </label>
+                        <input type="range" id="priorite_eco" 
+                               min="1" max="10" value="7"
+                               class="w-full accent-purple-600"
+                               oninput="document.getElementById('ecoValue').textContent = this.value">
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 rounded-lg font-semibold transition duration-200 shadow-lg">
+                        🔍 Générer les recommandations
+                    </button>
+                </form>
+            </div>
+
+            <!-- Panneau Résultats -->
+            <div class="lg:col-span-2">
+                <!-- Statistiques en haut -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl shadow-lg text-center">
+                        <div class="text-3xl font-bold" id="count-destinations">0</div>
+                        <div class="text-xs mt-1">Destinations</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-xl shadow-lg text-center">
+                        <div class="text-3xl font-bold" id="count-hebergements">0</div>
+                        <div class="text-xs mt-1">Hébergements</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-xl shadow-lg text-center">
+                        <div class="text-3xl font-bold" id="count-activites">0</div>
+                        <div class="text-xs mt-1">Activités</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-xl shadow-lg text-center">
+                        <div class="text-3xl font-bold" id="count-transports">0</div>
+                        <div class="text-xs mt-1">Transports</div>
+                    </div>
+                </div>
+
+                <!-- Résultats -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <span class="text-2xl">🎯</span>
+                            Recommandations Générées
+                        </h3>
+                        <div class="text-sm text-gray-500" id="user-info">
+                            👤 Utilisateur: <span id="current-user">Chargement...</span>
+                        </div>
+                    </div>
+                    
+                    <div id="results" class="min-h-[400px]">
+                        <div class="text-center py-20">
+                            <div class="text-6xl mb-4">🧳</div>
+                            <p class="text-gray-500 text-lg font-medium">Prêt pour l'aventure ?</p>
+                            <p class="text-gray-400 mt-2">Remplissez vos préférences et cliquez sur "Générer"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historique des recommandations -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <span class="text-2xl">📜</span>
+                        Historique des recommandations
+                    </h3>
+                    <div id="history" class="space-y-2 max-h-96 overflow-y-auto">
+                        <p class="text-gray-400 text-center py-8">Aucun historique</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration API
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // Auth functions
+        let currentUser = null;
+
+        function initAuth() {
+            const token = localStorage.getItem('access_token');
+            const userStr = localStorage.getItem('user');
+            
+            if (token && userStr) {
+                try {
+                    currentUser = JSON.parse(userStr);
+                    updateUserMenu(true);
+                    document.getElementById('current-user').textContent = currentUser.username;
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                    updateUserMenu(false);
+                    document.getElementById('current-user').textContent = 'Non connecté';
+                }
+            } else {
+                updateUserMenu(false);
+                document.getElementById('current-user').textContent = 'Non connecté';
+            }
+        }
+
+        function updateUserMenu(isLoggedIn) {
+            const userMenu = document.getElementById('user-menu');
+            if (!userMenu) return;
+            
+            if (isLoggedIn && currentUser) {
+                const roleIcon = currentUser.role === 'admin' ? '👑' : '👤';
+                userMenu.innerHTML = `
+                    <span class="text-sm">${roleIcon} ${currentUser.username}</span>
+                    ${currentUser.role === 'admin' ? '<a href="admin.html" class="text-xs bg-purple-500 hover:bg-purple-600 px-2 py-1 rounded">Admin</a>' : ''}
+                    <button onclick="logout()" class="text-xs bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition">
+                        Déconnexion
+                    </button>
+                `;
+            } else {
+                userMenu.innerHTML = `
+                    <a href="login.html" class="text-sm bg-white text-green-600 hover:bg-green-50 px-4 py-2 rounded transition font-semibold">
+                        Connexion
+                    </a>
+                    <a href="register.html" class="text-sm bg-green-700 hover:bg-green-800 px-4 py-2 rounded transition font-semibold">
+                        Inscription
+                    </a>
+                `;
+            }
+        }
+
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user');
+                currentUser = null;
+                window.location.href = 'login.html';
+            }
+        }
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('access_token');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            return headers;
+        }
+
+        // Handle form submission
+        async function handleGenerateRecommendations(event) {
+            event.preventDefault();
+            
+            const preferences = {
+                destination: document.getElementById('destination').value,
+                budget: parseFloat(document.getElementById('budget').value),
+                type_voyage: document.getElementById('type_voyage').value,
+                duree: document.getElementById('duree').value,
+                priorite_ecologique: parseInt(document.getElementById('priorite_eco').value)
+            };
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="text-center py-20"><div class="animate-spin text-6xl mb-4">⏳</div><p class="text-gray-500">Génération des recommandations...</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/recommendations-advanced`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(preferences)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayRecommendations(data.recommendations);
+                    updateCounts(data.recommendations);
+                    loadHistory();
+                } else {
+                    resultsDiv.innerHTML = `<div class="text-center py-20"><div class="text-6xl mb-4">❌</div><p class="text-red-600">${data.error || 'Erreur lors de la génération'}</p></div>`;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                resultsDiv.innerHTML = '<div class="text-center py-20"><div class="text-6xl mb-4">❌</div><p class="text-red-600">Erreur de connexion au serveur</p></div>';
+            }
+        }
+
+        function updateCounts(recommendations) {
+            document.getElementById('count-destinations').textContent = recommendations.destinations?.length || 0;
+            document.getElementById('count-hebergements').textContent = recommendations.accommodations?.length || 0;
+            document.getElementById('count-activites').textContent = recommendations.activities?.length || 0;
+            document.getElementById('count-transports').textContent = recommendations.transport?.length || 0;
+        }
+
+        function displayRecommendations(recommendations) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!recommendations || Object.keys(recommendations).length === 0) {
+                resultsDiv.innerHTML = '<div class="text-center py-20"><p class="text-gray-500">Aucune recommandation trouvée</p></div>';
+                return;
+            }
+
+            let html = '';
+
+            // Destinations
+            if (recommendations.destinations && recommendations.destinations.length > 0) {
+                html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-blue-700 border-b-2 border-blue-200 pb-2">🏖️ Destinations</h4>';
+                recommendations.destinations.forEach(dest => {
+                    html += `
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-3 rounded-r-lg">
+                            <h5 class="font-bold text-blue-900">${dest.destination || 'Destination'}</h5>
+                            <p class="text-sm text-gray-700 mt-1"><strong>📍 Localisation:</strong> ${dest.localisation || 'Non spécifié'}</p>
+                            ${dest.final_score ? `<p class="text-sm text-gray-700"><strong>⭐ Score:</strong> ${Math.round(dest.final_score)}/100</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Hébergements
+            if (recommendations.accommodations && recommendations.accommodations.length > 0) {
+                html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-green-700 border-b-2 border-green-200 pb-2">🏨 Hébergements</h4>';
+                recommendations.accommodations.forEach(acc => {
+                    html += `
+                        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-3 rounded-r-lg">
+                            <h5 class="font-bold text-green-900">${acc.hebergement || 'Hébergement'}</h5>
+                            <p class="text-sm text-gray-700 mt-1"><strong>⚡ Énergie:</strong> ${acc.energie || 'N/A'} kWh</p>
+                            <p class="text-sm text-gray-700"><strong>🏆 Certification:</strong> ${acc.niveau || 'Non certifié'}</p>
+                            ${acc.final_score ? `<p class="text-sm text-gray-700"><strong>⭐ Score:</strong> ${Math.round(acc.final_score)}/100</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Activités
+            if (recommendations.activities && recommendations.activities.length > 0) {
+                html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-purple-700 border-b-2 border-purple-200 pb-2">🎯 Activités</h4>';
+                recommendations.activities.forEach(act => {
+                    html += `
+                        <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mb-3 rounded-r-lg">
+                            <h5 class="font-bold text-purple-900">${act.activite || 'Activité'}</h5>
+                            <p class="text-sm text-gray-700 mt-1"><strong>🌱 Impact:</strong> ${act.impact || 'Non spécifié'}</p>
+                            ${act.final_score ? `<p class="text-sm text-gray-700"><strong>⭐ Score:</strong> ${Math.round(act.final_score)}/100</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Transports
+            if (recommendations.transport && recommendations.transport.length > 0) {
+                html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-orange-700 border-b-2 border-orange-200 pb-2">🚆 Transports</h4>';
+                recommendations.transport.forEach(trans => {
+                    html += `
+                        <div class="bg-orange-50 border-l-4 border-orange-500 p-4 mb-3 rounded-r-lg">
+                            <h5 class="font-bold text-orange-900">${trans.transport || 'Transport'}</h5>
+                            <p class="text-sm text-gray-700 mt-1"><strong>🌍 Émissions CO2:</strong> ${trans.co2 || 'N/A'} kg</p>
+                            ${trans.description ? `<p class="text-sm text-gray-600 mt-1">${trans.description}</p>` : ''}
+                            ${trans.final_score ? `<p class="text-sm text-gray-700"><strong>⭐ Score:</strong> ${Math.round(trans.final_score)}/100</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            if (!html) {
+                html = '<div class="text-center py-20"><p class="text-gray-500">Aucune recommandation disponible</p></div>';
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${API_BASE}/recommendations-advanced/history`, {
+                    headers: getAuthHeaders()
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.history && data.history.length > 0) {
+                    const historyDiv = document.getElementById('history');
+                    let html = '';
+                    
+                    data.history.forEach(item => {
+                        const date = new Date(item.created_at);
+                        const dateStr = date.toLocaleDateString('fr-FR', { 
+                            day: 'numeric', 
+                            month: 'long', 
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        const recData = typeof item.recommendation_data === 'string' 
+                            ? JSON.parse(item.recommendation_data) 
+                            : item.recommendation_data;
+                        
+                        const totalRecs = (recData.destinations?.length || 0) + 
+                                         (recData.accommodations?.length || 0) + 
+                                         (recData.activities?.length || 0) + 
+                                         (recData.transport?.length || 0);
+                        
+                        html += `
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="font-medium text-gray-800">${recData.preferences?.destination || 'Destination inconnue'}</p>
+                                        <p class="text-xs text-gray-500">${totalRecs} recommandation(s) • Score: ${Math.round(item.eco_score || 0)}/100</p>
+                                    </div>
+                                    <div class="text-xs text-gray-400">${dateStr}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    historyDiv.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuth();
+            loadHistory();
+        });
+    </script>
+</body>
+</html>

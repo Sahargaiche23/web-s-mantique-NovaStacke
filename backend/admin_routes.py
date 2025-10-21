@@ -2,7 +2,7 @@
 Admin panel routes for user management and analytics
 """
 from flask import Blueprint, jsonify, request
-from models import db, User, UserActivity, Recommendation, DestinationView
+from models import db, User, UserActivity, Recommendation, DestinationView, SPARQLQuery
 from auth import admin_required, log_activity
 from sqlalchemy import func, desc
 from datetime import datetime, timedelta
@@ -217,7 +217,7 @@ def get_dashboard_stats(current_user_id, current_user):
     # Activity statistics
     total_activities = UserActivity.query.count()
     total_logins = UserActivity.query.filter_by(activity_type='login').count()
-    total_sparql_queries = UserActivity.query.filter_by(activity_type='sparql_query').count()
+    total_sparql_queries = SPARQLQuery.query.count()  # Utilise maintenant la table SPARQLQuery
     total_searches = UserActivity.query.filter_by(activity_type='search').count()
     
     # Recommendation statistics
@@ -378,6 +378,36 @@ def get_all_recommendations(current_user_id, current_user):
     return jsonify({
         'success': True,
         'recommendations': [rec.to_dict() for rec in paginated.items],
+        'total': paginated.total,
+        'pages': paginated.pages,
+        'current_page': page
+    })
+
+# ==================== SPARQL QUERIES ANALYTICS ====================
+
+@admin_bp.route('/sparql-queries', methods=['GET'])
+@admin_required
+def get_all_sparql_queries(current_user_id, current_user):
+    """Get all SPARQL queries with filtering"""
+    query_type = request.args.get('type')
+    success_only = request.args.get('success_only', 'false').lower() == 'true'
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 50))
+    
+    query = SPARQLQuery.query
+    
+    if query_type:
+        query = query.filter_by(query_type=query_type)
+    
+    if success_only:
+        query = query.filter_by(success=True)
+    
+    query = query.order_by(desc(SPARQLQuery.created_at))
+    paginated = query.paginate(page=page, per_page=per_page, error_out=False)
+    
+    return jsonify({
+        'success': True,
+        'queries': [q.to_dict() for q in paginated.items],
         'total': paginated.total,
         'pages': paginated.pages,
         'current_page': page

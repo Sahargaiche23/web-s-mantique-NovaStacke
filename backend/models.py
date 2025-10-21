@@ -81,9 +81,17 @@ class Recommendation(db.Model):
     
     def to_dict(self):
         """Convert recommendation to dictionary"""
+        # Get username
+        username = 'Anonymous'
+        if self.user_id:
+            user = User.query.get(self.user_id)
+            if user:
+                username = user.username
+        
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'username': username,
             'recommendation_type': self.recommendation_type,
             'recommendation_data': json.loads(self.recommendation_data) if self.recommendation_data else {},
             'eco_score': self.eco_score,
@@ -108,4 +116,39 @@ class DestinationView(db.Model):
             'destination_name': self.destination_name,
             'view_count': self.view_count,
             'last_viewed': self.last_viewed.isoformat() if self.last_viewed else None
+        }
+
+class SPARQLQuery(db.Model):
+    """Track SPARQL queries for analytics"""
+    __tablename__ = 'sparql_queries'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    query_text = db.Column(db.Text)
+    query_type = db.Column(db.String(20))  # 'SELECT', 'INSERT', 'DELETE', 'UPDATE'
+    results_count = db.Column(db.Integer, default=0)
+    success = db.Column(db.Boolean, default=True)
+    error_message = db.Column(db.Text)
+    execution_time = db.Column(db.Float)  # in seconds
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        """Convert to dictionary"""
+        username = 'Anonymous'
+        if self.user_id:
+            user = User.query.get(self.user_id)
+            if user:
+                username = user.username
+        
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'username': username,
+            'query_text': self.query_text,
+            'query_type': self.query_type,
+            'results_count': self.results_count,
+            'success': self.success,
+            'error_message': self.error_message,
+            'execution_time': self.execution_time,
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }

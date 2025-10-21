@@ -87,6 +87,9 @@ function showTab(tabName) {
         case 'recommendations':
             loadRecommendations();
             break;
+        case 'sparql':
+            loadSPARQLQueries();
+            break;
     }
 }
 
@@ -570,48 +573,234 @@ function displayRecommendations(recommendations) {
     }
     
     container.innerHTML = recommendations.map(rec => {
-        const date = rec.created_at ? new Date(rec.created_at).toLocaleDateString('fr-FR') : 'N/A';
+        const date = rec.created_at ? new Date(rec.created_at).toLocaleString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }) : 'N/A';
         const ecoScore = rec.eco_score ? rec.eco_score.toFixed(1) : 'N/A';
         const scoreColor = rec.eco_score >= 80 ? 'text-green-600' : rec.eco_score >= 60 ? 'text-yellow-600' : 'text-red-600';
         
+        // Extraire les détails des recommandations
+        const recData = rec.recommendation_data || {};
+        const preferences = recData.preferences || {};
+        const destinations = recData.destinations || [];
+        const accommodations = recData.accommodations || [];
+        const activities = recData.activities || [];
+        const transports = recData.transport || [];
+        
+        // Générer les détails
+        let detailsHTML = '';
+        
+        // Destinations
+        if (destinations.length > 0) {
+            detailsHTML += '<div class="mb-2"><strong class="text-blue-600">🏖️ Destinations:</strong><ul class="ml-4 mt-1 space-y-1">';
+            destinations.slice(0, 3).forEach(dest => {
+                detailsHTML += `<li class="text-sm text-gray-700">• ${dest.destination || dest} - ${dest.localisation || ''}</li>`;
+            });
+            detailsHTML += '</ul></div>';
+        }
+        
+        // Hébergements
+        if (accommodations.length > 0) {
+            detailsHTML += '<div class="mb-2"><strong class="text-green-600">🏨 Hébergements:</strong><ul class="ml-4 mt-1 space-y-1">';
+            accommodations.slice(0, 3).forEach(acc => {
+                detailsHTML += `<li class="text-sm text-gray-700">• ${acc.hebergement || acc} - ${acc.energie || 'N/A'} kWh</li>`;
+            });
+            detailsHTML += '</ul></div>';
+        }
+        
+        // Activités
+        if (activities.length > 0) {
+            detailsHTML += '<div class="mb-2"><strong class="text-purple-600">🎯 Activités:</strong><ul class="ml-4 mt-1 space-y-1">';
+            activities.slice(0, 3).forEach(act => {
+                detailsHTML += `<li class="text-sm text-gray-700">• ${act.activite || act} - ${act.impact || 'Impact non spécifié'}</li>`;
+            });
+            detailsHTML += '</ul></div>';
+        }
+        
+        // Transports
+        if (transports.length > 0) {
+            detailsHTML += '<div class="mb-2"><strong class="text-orange-600">🚆 Transports:</strong><ul class="ml-4 mt-1 space-y-1">';
+            transports.slice(0, 3).forEach(trans => {
+                const co2Text = trans.co2 ? `Émissions CO2: ${trans.co2} kg` : '';
+                const desc = trans.description || 'Transport écologique';
+                detailsHTML += `<li class="text-sm text-gray-700">• ${trans.transport || trans}<br><span class="text-xs text-gray-600 ml-2">${co2Text}. ${desc}</span></li>`;
+            });
+            detailsHTML += '</ul></div>';
+        }
+        
+        if (!detailsHTML) {
+            detailsHTML = '<p class="text-sm text-gray-500 italic">Aucun détail disponible</p>';
+        }
+        
         return `
-            <div class="bg-white border rounded-lg p-4 hover:shadow-md transition">
-                <div class="flex justify-between items-start mb-3">
+            <div class="bg-gradient-to-r from-white to-gray-50 border-l-4 border-indigo-500 rounded-lg p-5 hover:shadow-lg transition">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-semibold">
                             ${rec.recommendation_type}
                         </span>
-                        <p class="text-sm text-gray-600 mt-2">User ID: ${rec.user_id || 'Anonymous'}</p>
+                        <p class="text-sm text-gray-700 mt-2 flex items-center">
+                            <span class="mr-2">👤</span>
+                            <strong>Utilisateur:</strong> <span class="ml-1 font-semibold text-indigo-600">${rec.username}</span>
+                        </p>
+                        ${preferences.destination ? `<p class="text-sm text-gray-600 mt-1">🎯 Recherche: ${preferences.destination} (${preferences.budget}€)</p>` : ''}
                     </div>
                     <div class="text-right">
                         <p class="text-sm text-gray-600">Score écologique</p>
-                        <p class="text-2xl font-bold ${scoreColor}">${ecoScore}</p>
+                        <p class="text-3xl font-bold ${scoreColor}">${ecoScore}</p>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500">📅 ${date}</p>
+                
+                <!-- Détails des recommandations -->
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-3">
+                    ${detailsHTML}
+                </div>
+                
+                <p class="text-xs text-gray-500 flex items-center">
+                    <span class="mr-1">📅</span>
+                    ${date}
+                </p>
             </div>
         `;
     }).join('');
 }
 
 function updateRecommendationStats(recommendations) {
-    const stats = {
-        destination: 0,
-        accommodation: 0,
-        activity: 0,
-        transport: 0
-    };
+    let totalDestinations = 0;
+    let totalAccommodations = 0;
+    let totalActivities = 0;
+    let totalTransports = 0;
     
     recommendations.forEach(rec => {
-        if (stats.hasOwnProperty(rec.recommendation_type)) {
-            stats[rec.recommendation_type]++;
-        }
+        const recData = rec.recommendation_data || {};
+        totalDestinations += (recData.destinations || []).length;
+        totalAccommodations += (recData.accommodations || []).length;
+        totalActivities += (recData.activities || []).length;
+        totalTransports += (recData.transport || []).length;
     });
     
-    document.getElementById('rec-destinations').textContent = stats.destination;
-    document.getElementById('rec-accommodations').textContent = stats.accommodation;
-    document.getElementById('rec-activities').textContent = stats.activity;
-    document.getElementById('rec-transports').textContent = stats.transport;
+    document.getElementById('rec-destinations').textContent = totalDestinations;
+    document.getElementById('rec-accommodations').textContent = totalAccommodations;
+    document.getElementById('rec-activities').textContent = totalActivities;
+    document.getElementById('rec-transports').textContent = totalTransports;
+}
+
+// ==================== SPARQL QUERIES ====================
+
+async function loadSPARQLQueries() {
+    try {
+        // Charger les statistiques SPARQL
+        const statsResponse = await fetch(`${API_URL}/api/sparql/count`, {
+            headers: getAuthHeaders()
+        });
+        const statsData = await statsResponse.json();
+        
+        if (statsData.success && statsData.by_type) {
+            document.getElementById('sparql-select-count').textContent = statsData.by_type.SELECT || 0;
+            document.getElementById('sparql-insert-count').textContent = statsData.by_type.INSERT || 0;
+            document.getElementById('sparql-delete-count').textContent = statsData.by_type.DELETE || 0;
+            document.getElementById('sparql-update-count').textContent = statsData.by_type.UPDATE || 0;
+        }
+        
+        // Charger les requêtes
+        const queriesResponse = await fetch(`${API_URL}/api/admin/sparql-queries?per_page=20`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (!queriesResponse.ok) throw new Error('Failed to load SPARQL queries');
+        
+        const data = await queriesResponse.json();
+        
+        if (data.success) {
+            displaySPARQLQueries(data.queries);
+        }
+    } catch (error) {
+        console.error('Error loading SPARQL queries:', error);
+        showNotification('Erreur lors du chargement des requêtes SPARQL', 'error');
+    }
+}
+
+function displaySPARQLQueries(queries) {
+    const container = document.getElementById('sparql-queries-list');
+    if (!container) return;
+    
+    if (queries.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center py-8">Aucune requête SPARQL exécutée</p>';
+        return;
+    }
+    
+    container.innerHTML = queries.map(query => {
+        const date = query.created_at ? new Date(query.created_at).toLocaleString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }) : 'N/A';
+        
+        const typeColors = {
+            'SELECT': 'bg-blue-100 text-blue-800',
+            'INSERT': 'bg-green-100 text-green-800',
+            'DELETE': 'bg-red-100 text-red-800',
+            'UPDATE': 'bg-orange-100 text-orange-800',
+            'OTHER': 'bg-gray-100 text-gray-800'
+        };
+        
+        const typeColor = typeColors[query.query_type] || typeColors['OTHER'];
+        const successIcon = query.success ? '✅' : '❌';
+        const statusColor = query.success ? 'text-green-600' : 'text-red-600';
+        
+        // Tronquer la requête pour l'affichage
+        const queryText = query.query_text.length > 200 
+            ? query.query_text.substring(0, 200) + '...' 
+            : query.query_text;
+        
+        return `
+            <div class="bg-gradient-to-r from-white to-gray-50 border-l-4 ${query.success ? 'border-green-500' : 'border-red-500'} rounded-lg p-4 hover:shadow-lg transition">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 ${typeColor} rounded-full text-sm font-semibold">
+                            ${query.query_type}
+                        </span>
+                        <span class="text-2xl">${successIcon}</span>
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                <span class="font-semibold">👤 ${query.username}</span>
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                ${query.results_count} résultat(s) • ${query.execution_time ? query.execution_time.toFixed(3) + 's' : 'N/A'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-900 text-white p-3 rounded-lg mb-2 overflow-x-auto">
+                    <pre class="text-xs font-mono">${escapeHtml(queryText)}</pre>
+                </div>
+                
+                ${query.error_message ? `
+                    <div class="bg-red-50 border border-red-200 rounded p-2 mt-2">
+                        <p class="text-xs text-red-700">❌ Erreur: ${escapeHtml(query.error_message)}</p>
+                    </div>
+                ` : ''}
+                
+                <p class="text-xs text-gray-500 flex items-center mt-2">
+                    <span class="mr-1">📅</span>
+                    ${date}
+                </p>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // ==================== NOTIFICATIONS ====================

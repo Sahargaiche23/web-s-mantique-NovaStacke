@@ -221,3 +221,57 @@ class OntologyManager:
         }}
         """
         return self.execute_sparql(query)
+    
+    def get_all_destinations(self):
+        """Récupère toutes les destinations de l'ontologie"""
+        query = """
+        PREFIX eco: <http://example.org/ecotourisme#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        
+        SELECT ?destination ?localisation ?biodiversite ?score
+        WHERE {
+            ?dest rdf:type eco:Destination .
+            OPTIONAL { ?dest eco:nom ?destination }
+            OPTIONAL { ?dest eco:aLocalisation ?localisation }
+            OPTIONAL { ?dest eco:biodiversite ?biodiversite }
+            OPTIONAL { ?dest eco:scoreÉcologique ?score }
+        }
+        """
+        results = self.execute_sparql(query)
+        # Formater pour correspondre au format attendu
+        formatted = []
+        for r in results:
+            formatted.append({
+                'destination': r.get('destination', 'Unknown'),
+                'localisation': r.get('localisation', ''),
+                'biodiversite': r.get('biodiversite', ''),
+                'final_score': float(r.get('score', 0)) if r.get('score') else 0
+            })
+        return formatted
+    
+    def get_all_accommodations(self):
+        """Récupère tous les hébergements de l'ontologie"""
+        query = """
+        PREFIX eco: <http://example.org/ecotourisme#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        
+        SELECT ?hebergement ?energie ?niveau ?certification
+        WHERE {
+            ?heb rdf:type eco:Hébergement .
+            OPTIONAL { ?heb eco:nom ?hebergement }
+            OPTIONAL { ?heb eco:consommationÉnergétique ?energie }
+            OPTIONAL { ?heb eco:niveauCertification ?niveau }
+            OPTIONAL { ?heb eco:certification ?certification }
+        }
+        """
+        results = self.execute_sparql(query)
+        # Formater pour correspondre au format attendu
+        formatted = []
+        for r in results:
+            formatted.append({
+                'hebergement': r.get('hebergement', 'Unknown'),
+                'energie': r.get('energie', ''),
+                'niveau': r.get('niveau', ''),
+                'certification': r.get('certification', '')
+            })
+        return formatted

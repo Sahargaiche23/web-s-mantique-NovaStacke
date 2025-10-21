@@ -85,9 +85,10 @@ function showPage(pageName) {
 
 // ==================== RECOMMANDATIONS ====================
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize authentication
+    // Initialiser l'authentification
     initAuth();
-    
+
+    // Charger les données de la page d'accueil
     loadHomeData();
 
     // Démarrer la mise à jour automatique du dashboard
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeunload', stopDashboardAutoUpdate);
 });
 
-function showPage(pageId) {
+function showPage(pageId, event) {
     // Cacher toutes les pages
     document.querySelectorAll('.page-content').forEach(page => {
         page.classList.add('hidden');
@@ -111,7 +112,11 @@ function showPage(pageId) {
         link.classList.remove('font-bold', 'text-green-300');
         link.classList.add('text-white');
     });
-    event.target.classList.add('font-bold', 'text-green-300');
+
+    // Ajouter le style actif sur le lien cliqué (si disponible)
+    if (event && event.target) {
+        event.target.classList.add('font-bold', 'text-green-300');
+    }
 
     // Actions spécifiques par page
     if (pageId === 'home') {
@@ -121,14 +126,19 @@ function showPage(pageId) {
     }
 
     // Recharger les données spécifiques à la page
-    if (pageId === 'sparql') {
-        loadSPARQLQueries();
-    } else if (pageId === 'visualizations') {
-        loadVisualizations();
-    } else if (pageId === 'ontology') {
-        loadOntologyData();
-    } else if (pageId === 'chat') {
-        initChat();
+    switch (pageId) {
+        case 'sparql':
+            loadSPARQLQueries();
+            break;
+        case 'visualizations':
+            loadVisualizations();
+            break;
+        case 'ontology':
+            loadOntologyData();
+            break;
+        case 'chat':
+            initChat();
+            break;
     }
 }
 
@@ -137,10 +147,13 @@ async function generateRecommendations() {
     const profileEl = document.getElementById('user-eco-profile');
     const prefsEl = document.getElementById('user-preferences');
     const container = document.getElementById('recommendations-container');
+
     if (!container) return;
+
     const budget = budgetEl ? parseFloat(budgetEl.value || '0') : 0;
     const profile = profileEl ? profileEl.value : 'Modéré';
     const prefs = prefsEl ? prefsEl.value : '';
+
     container.innerHTML = '<p class="text-gray-500">Génération en cours...</p>';
 
     const payload = {
@@ -148,78 +161,122 @@ async function generateRecommendations() {
         eco_profile: profile,
         preferences: prefs
     };
+
     try {
         const res = await fetch(`${API_BASE}/recommendations/travel-plan`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erreur API');
-        
+
+        if (!res.ok) {
+            throw new Error(data.error || `Erreur API (${res.status})`);
+        }
+
         // Afficher score et empreinte
         if (data.total_eco_score !== undefined) {
             document.getElementById('estimated-eco-score').classList.remove('hidden');
             document.getElementById('eco-score-value').textContent = Math.round(data.total_eco_score);
         }
+
         if (data.estimated_carbon_footprint !== undefined || data.total_eco_score !== undefined) {
             const summary = document.getElementById('recommendations-summary');
             summary.classList.remove('hidden');
             document.getElementById('carbon-footprint').textContent = Math.round(data.estimated_carbon_footprint || 0);
             document.getElementById('total-eco-score').textContent = Math.round(data.total_eco_score || 0);
         }
-        
+
         renderRecommendations(data);
     } catch (e) {
         container.innerHTML = `<p class="text-red-600">${e.message}</p>`;
     }
 }
 
-async function generateRecommendation() { return generateRecommendations(); }
+async function generateRecommendation() {
+    return generateRecommendations();
+}
 
 function renderRecommendations(plan) {
     const container = document.getElementById('recommendations-container');
     if (!container) return;
+
     let html = '';
-    
     const recs = plan.recommendations || {};
-    
-    if (recs.destinations && recs.destinations.length > 0) {
-        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-green-700 border-b-2 border-green-200 pb-2">🏞️ Destinations</h4><div class="space-y-2">';
-        recs.destinations.forEach(d => { 
-            const txt = d.destination ? `${d.destination} (${d.localisation}) - Score: ${Math.round(d.final_score)}` : d;
-            html += `<div class="p-3 bg-green-50 border-l-4 border-green-500 rounded">${txt}</div>`; 
-        });
-        html += '</div></div>';
+
+    // Destinations
+    if (recs.destinations?.length) {
+        html += `
+        <div class="mb-6">
+            <h4 class="font-bold text-lg mb-3 text-green-700 border-b-2 border-green-200 pb-2">🏞️ Destinations</h4>
+            <div class="space-y-2">
+                ${recs.destinations.map(d =>
+                    `<div class="p-3 bg-green-50 border-l-4 border-green-500 rounded">
+                        ${d.destination ? `${d.destination} (${d.localisation}) - Score: ${Math.round(d.final_score)}` : d}
+                    </div>`
+                ).join('')}
+            </div>
+        </div>`;
     }
-    if (recs.accommodations && recs.accommodations.length > 0) {
-        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-blue-700 border-b-2 border-blue-200 pb-2">🏨 Hébergements</h4><div class="space-y-2">';
-        recs.accommodations.forEach(a => { 
-            const txt = a.hebergement ? `${a.hebergement} - ${a.energie} kWh - ${a.niveau} - Score: ${Math.round(a.final_score)}` : a;
-            html += `<div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">${txt}</div>`; 
-        });
-        html += '</div></div>';
+
+    // Hébergements
+    if (recs.accommodations?.length) {
+        html += `
+        <div class="mb-6">
+            <h4 class="font-bold text-lg mb-3 text-blue-700 border-b-2 border-blue-200 pb-2">🏨 Hébergements</h4>
+            <div class="space-y-2">
+                ${recs.accommodations.map(a =>
+                    `<div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                        ${a.hebergement ? `${a.hebergement} - ${a.energie} kWh - ${a.niveau} - Score: ${Math.round(a.final_score)}` : a}
+                    </div>`
+                ).join('')}
+            </div>
+        </div>`;
     }
-    if (recs.activities && recs.activities.length > 0) {
-        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-purple-700 border-b-2 border-purple-200 pb-2">🎯 Activités</h4><div class="space-y-2">';
-        recs.activities.forEach(a => { 
-            const txt = a.activite ? `${a.activite} - ${a.impact} - Score: ${Math.round(a.final_score)}` : a;
-            html += `<div class="p-3 bg-purple-50 border-l-4 border-purple-500 rounded">${txt}</div>`; 
-        });
-        html += '</div></div>';
+
+    // Activités
+    if (recs.activities?.length) {
+        html += `
+        <div class="mb-6">
+            <h4 class="font-bold text-lg mb-3 text-purple-700 border-b-2 border-purple-200 pb-2">🎯 Activités</h4>
+            <div class="space-y-2">
+                ${recs.activities.map(a =>
+                    `<div class="p-3 bg-purple-50 border-l-4 border-purple-500 rounded">
+                        ${a.activite ? `${a.activite} - ${a.impact} - Score: ${Math.round(a.final_score)}` : a}
+                    </div>`
+                ).join('')}
+            </div>
+        </div>`;
     }
-    if (recs.transport && recs.transport.length > 0) {
-        html += '<div class="mb-6"><h4 class="font-bold text-lg mb-3 text-yellow-700 border-b-2 border-yellow-200 pb-2">🚆 Transports</h4><div class="space-y-2">';
-        recs.transport.forEach(t => { 
-            const txt = t.transport ? `${t.transport} - ${t.co2} kg CO2 - Score: ${Math.round(t.final_score)}` : t;
-            html += `<div class="p-3 bg-yellow-50 border-l-4 border-yellow-500 rounded">${txt}</div>`; 
-        });
-        html += '</div></div>';
+
+    // Transports
+    if (recs.transport?.length) {
+        html += `
+        <div class="mb-6">
+            <h4 class="font-bold text-lg mb-3 text-yellow-700 border-b-2 border-yellow-200 pb-2">🚆 Transports</h4>
+            <div class="space-y-2">
+                ${recs.transport.map(t =>
+                    `<div class="p-3 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                        ${t.transport ? `${t.transport} - ${t.co2} kg CO2 - Score: ${Math.round(t.final_score)}` : t}
+                    </div>`
+                ).join('')}
+            </div>
+        </div>`;
     }
-    if (plan.message) html += `<div class="p-4 bg-gray-100 rounded-lg border border-gray-300">${plan.message}</div>`;
-    if (!html) html = '<p class="text-gray-500 text-center py-8">Aucune recommandation disponible</p>';
+
+    // Message général
+    if (plan.message) {
+        html += `<div class="p-4 bg-gray-100 rounded-lg border border-gray-300">${plan.message}</div>`;
+    }
+
+    if (!html) {
+        html = '<p class="text-gray-500 text-center py-8">Aucune recommandation disponible</p>';
+    }
+
     container.innerHTML = html;
 }
+
 
 // ==================== HOME ====================
 async function loadHomeData() {
@@ -652,6 +709,21 @@ async function loadDashboard() {
         document.getElementById('stat-eco-score').textContent = data.eco_score || 0;
         document.getElementById('stat-carbon-footprint').textContent = data.carbon_footprint || 0;
         document.getElementById('stat-total-triples').textContent = data.total_triples || 0;
+
+        // Mettre à jour les statistiques système
+        if (data.system_stats) {
+            const usersStat = document.getElementById('stat-users');
+            const newUsersStat = document.getElementById('stat-new-users');
+            const sparqlStat = document.getElementById('stat-sparql');
+            const recsStat = document.getElementById('stat-recommendations');
+            const avgScoreStat = document.getElementById('stat-avg-score');
+            
+            if (usersStat) usersStat.textContent = data.system_stats.total_users || 0;
+            if (newUsersStat) newUsersStat.textContent = data.system_stats.new_users_this_month || 0;
+            if (sparqlStat) sparqlStat.textContent = data.system_stats.total_sparql_queries || 0;
+            if (recsStat) recsStat.textContent = data.system_stats.total_recommendations || 0;
+            if (avgScoreStat) avgScoreStat.textContent = data.system_stats.avg_recommendation_score || 0;
+        }
 
         // Mettre à jour le timestamp
         document.getElementById('last-updated').textContent = `Dernière mise à jour: ${new Date().toLocaleTimeString()}`;

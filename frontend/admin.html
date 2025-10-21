@@ -45,6 +45,9 @@
                 <button onclick="showTab('recommendations')" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-indigo-600">
                     🎯 Recommandations
                 </button>
+                <button onclick="showTab('sparql')" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-indigo-600">
+                    💻 Requêtes SPARQL
+                </button>
             </div>
         </div>
 
@@ -227,6 +230,41 @@
 
                 <!-- Recommendations List -->
                 <div id="recommendations-list" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- SPARQL Queries Tab -->
+        <div id="tab-sparql" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">💻 Requêtes SPARQL Exécutées</h2>
+                    <a href="sparql_avance.html" target="_blank" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition text-sm">
+                        Ouvrir l'éditeur SPARQL
+                    </a>
+                </div>
+                
+                <!-- SPARQL Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">SELECT</p>
+                        <p class="text-2xl font-bold text-blue-600" id="sparql-select-count">-</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">INSERT</p>
+                        <p class="text-2xl font-bold text-green-600" id="sparql-insert-count">-</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">DELETE</p>
+                        <p class="text-2xl font-bold text-red-600" id="sparql-delete-count">-</p>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">UPDATE</p>
+                        <p class="text-2xl font-bold text-orange-600" id="sparql-update-count">-</p>
+                    </div>
+                </div>
+
+                <!-- SPARQL Queries List -->
+                <div id="sparql-queries-list" class="space-y-4"></div>
             </div>
         </div>
     </div>

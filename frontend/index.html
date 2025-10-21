@@ -15,7 +15,8 @@
                 <a href="#" onclick="showPage('home')" class="hover:underline">Accueil</a>
                 <a href="#" onclick="showPage('search')" class="hover:underline">Recherche</a>
                 <a href="#" onclick="showPage('recommendations')" class="hover:underline">Recommandations</a>
-                <a href="#" onclick="showPage('sparql')" class="hover:underline">SPARQL</a>
+                <a href="recommandations_avance.html" class="hover:underline bg-purple-500 px-3 py-1 rounded">🤖 IA Avancée</a>
+                <a href="sparql_avance.html" class="hover:underline bg-indigo-500 px-3 py-1 rounded">💻 SPARQL</a>
                 <a href="#" onclick="showPage('visualizations')" class="hover:underline">Visualisations</a>
                 <a href="#" onclick="showPage('ontology')" class="hover:underline">Ontologie</a>
                 <a href="#" onclick="showPage('chat')" class="hover:underline">Chat</a>
@@ -81,6 +82,42 @@
                             <p class="text-3xl font-bold" id="stat-total-triples">-</p>
                         </div>
                         <div class="text-orange-200 text-4xl">🔗</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques Système -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Total Utilisateurs</h3>
+                            <p class="text-3xl font-bold text-blue-600" id="stat-users">-</p>
+                            <p class="text-xs text-gray-500 mt-1">+<span id="stat-new-users">0</span> ce mois</p>
+                        </div>
+                        <div class="text-4xl">👥</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Requêtes SPARQL</h3>
+                            <p class="text-3xl font-bold text-purple-600" id="stat-sparql">-</p>
+                            <p class="text-xs text-gray-500 mt-1">Total exécutées</p>
+                        </div>
+                        <div class="text-4xl">💻</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Recommandations</h3>
+                            <p class="text-3xl font-bold text-green-600" id="stat-recommendations">-</p>
+                            <p class="text-xs text-gray-500 mt-1">Score moy: <span id="stat-avg-score">0</span>/100</p>
+                        </div>
+                        <div class="text-4xl">🎯</div>
                     </div>
                 </div>
             </div>
